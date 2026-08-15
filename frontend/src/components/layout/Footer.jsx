@@ -6,7 +6,7 @@ import {
 
 function Footer() {
   return (
-   <footer className="bg-[#343E4F] text-white">
+    <footer className="bg-[#343E4F] text-white">
 
       <div className="mx-auto max-w-7xl px-6 py-14">
 
@@ -34,10 +34,10 @@ function Footer() {
               </a>
 
               <a href="#" aria-label="Social media">
-  <span className="text-sm font-bold">
-    IG
-  </span>
-</a>
+                <span className="text-sm font-bold">
+                  IG
+                </span>
+              </a>
 
               <a href="#" aria-label="Email">
                 <Mail size={17} />
