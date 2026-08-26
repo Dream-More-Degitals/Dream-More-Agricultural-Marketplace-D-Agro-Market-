@@ -17,6 +17,11 @@ import OrdersPage from "../pages/Buyer/OrdersPage";
 import AIPage from "../pages/AI/AIPage";
 import ProfilePage from "../pages/Auth/ProfilePage";
 
+import AdminDashboard from '../pages/Admin/Dashboard';
+import OrderTracking from '../pages/Buyer/OrderTracking';
+import Profile from '../pages/Buyer/Profile';
+import Notifications from '../pages/Buyer/Notifications';
+
 function AppRoutes() {
   return (
     <Routes>
