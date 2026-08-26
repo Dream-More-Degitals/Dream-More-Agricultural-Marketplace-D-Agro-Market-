@@ -94,10 +94,12 @@ function AppRoutes() {
           path="profile"
           element={<ProfilePage />}
         />
-
+        <Route path="tracking" element={<OrderTracking />} />
+        <Route path="user-profile" element={<Profile />} />
+        <Route path="notifications" element={<Notifications />} />
       </Route>
 
-
+     <Route path="/admin/dashboard" element={<AdminDashboard />} />
       {/* =====================================================
           LEGACY SHORT ROUTES
           Keep existing links working
