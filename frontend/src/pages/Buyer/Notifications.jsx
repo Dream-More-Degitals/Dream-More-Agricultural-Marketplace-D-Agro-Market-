@@ -9,26 +9,26 @@ export default function Notifications() {
 
   return (
     <div className="min-h-screen bg-slate-50 pb-24 font-sans text-slate-800">
-      <header className="flex items-center justify-between bg-white px-4 py-3 shadow-sm">
-        <h1 className="text-base font-bold text-slate-900">Notifications</h1>
-        <button className="text-xs font-semibold text-orange-600">Mark all as read</button>
+      <header className="flex items-center justify-between bg-white px-4 py-3 shadow-sm border-b border-slate-100">
+        <h1 className="text-base font-bold text-[#343E4F]">Notifications</h1>
+        <button className="text-xs font-semibold text-[#E57036] hover:underline">Mark all as read</button>
       </header>
 
       <main className="p-4 space-y-3">
         {notificationsList.map((item) => (
-          <div key={item.id} className={`rounded-2xl p-4 shadow-sm border transition-all ${item.unread ? 'bg-orange-50/40 border-orange-200' : 'bg-white border-slate-100'}`}>
+          <div key={item.id} className={`rounded-2xl p-4 shadow-sm border transition-all ${item.unread ? 'bg-[#E57036]/5 border-[#E57036]/30' : 'bg-white border-slate-100'}`}>
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-start gap-3">
-                <span className="rounded-xl bg-orange-100 p-2.5 text-orange-600 text-sm font-mono">
+                <span className="rounded-xl bg-[#E57036]/10 p-2.5 text-[#E57036] text-sm font-mono">
                   {item.type === 'delivery' ? 'local_shipping' : item.type === 'ai' ? 'psychology' : 'payments'}
                 </span>
                 <div>
-                  <h3 className="text-xs font-bold text-slate-900">{item.title}</h3>
+                  <h3 className="text-xs font-bold text-[#343E4F]">{item.title}</h3>
                   <p className="text-xs text-slate-600 mt-1">{item.desc}</p>
                   <span className="text-[10px] text-slate-400 mt-2 block">{item.time}</span>
                 </div>
               </div>
-              {item.unread && <span className="h-2 w-2 rounded-full bg-orange-600 mt-1"></span>}
+              {item.unread && <span className="h-2 w-2 rounded-full bg-[#E57036] mt-1"></span>}
             </div>
           </div>
         ))}
