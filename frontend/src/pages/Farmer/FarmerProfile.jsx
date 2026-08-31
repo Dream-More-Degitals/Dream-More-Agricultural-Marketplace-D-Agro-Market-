@@ -1,4 +1,3 @@
-import React from 'react';
 import { User, Mail, Phone, MapPin, Shield, Save } from 'lucide-react';
 
 export default function FarmerProfile() {

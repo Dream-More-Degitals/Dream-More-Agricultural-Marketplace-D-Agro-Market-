@@ -1,4 +1,3 @@
-import React from 'react';
 import { 
   LayoutDashboard, ShoppingBag, Sparkles, ClipboardList, 
   Settings, Bell, ArrowRight, Sprout 

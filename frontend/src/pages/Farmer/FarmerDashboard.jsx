@@ -1,7 +1,6 @@
-import React from 'react';
 import { 
   ShoppingBag, Sparkles, TrendingUp, 
-  ArrowUpRight, BarChart3, ShieldCheck, Plus, Search 
+  ArrowUpRight, BarChart3, ShieldCheck, Plus,
 } from 'lucide-react';
 
 export default function FarmerDashboard() {

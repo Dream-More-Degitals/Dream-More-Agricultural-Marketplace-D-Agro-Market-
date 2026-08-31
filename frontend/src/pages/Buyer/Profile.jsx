@@ -1,4 +1,3 @@
-import React from 'react';
 import { UserCheck, CreditCard, Building, Plus, Sparkles, ArrowRightLeft } from 'lucide-react';
 
 export default function Profile() {
@@ -36,7 +35,7 @@ export default function Profile() {
         </div>
 
         {/* AI Buyer Analysis Box */}
-        <div className="bg-gradient-to-br from-[#343E4F] to-slate-900 text-white p-6 rounded-2xl shadow-md space-y-3">
+        <div className="bg-gradient-to-brfrom-[#343E4F] to-slate-900 text-white p-6 rounded-2xl shadow-md space-y-3">
           <span className="bg-[#E57036] text-[10px] font-bold px-3 py-1 rounded-full uppercase flex items-center gap-1 w-fit">
             <Sparkles className="w-3 h-3" /> Buyer AI Analysis
           </span>

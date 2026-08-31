@@ -1,9 +1,7 @@
-import React from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, ShoppingBag, Sparkles, ClipboardList, 
-  Settings, Bell, Search, Plus, TrendingUp, AlertTriangle, 
-  ChevronRight, ArrowUpRight, BarChart3, ShieldCheck, LogOut 
+  Settings, Bell, LogOut 
 } from 'lucide-react';
 
 export default function FarmerLayout() {
