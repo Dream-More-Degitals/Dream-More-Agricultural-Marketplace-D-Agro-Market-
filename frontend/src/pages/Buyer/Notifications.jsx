@@ -1,38 +1,80 @@
 import React from 'react';
-
+import { Bell, ShieldCheck, TrendingDown, Cpu, Megaphone, Check } from 'lucide-react';
 export default function Notifications() {
-  const notificationsList = [
-    { id: 1, title: "Order Dispatched", desc: "Your order #AG-88219 is now out for delivery with local transport provider.", time: "10 mins ago", unread: true, type: "delivery" },
-    { id: 2, title: "AI Price Alert", desc: "Teff market prices have surged by 8% in your region this week. Tap to view market insights.", time: "2 hours ago", unread: true, type: "ai" },
-    { id: 3, title: "Payment Successful", desc: "1,450 ETB payment for Fertilizer Order #AG-88102 was verified successfully.", time: "Yesterday", unread: false, type: "payment" },
-  ];
-
   return (
-    <div className="min-h-screen bg-slate-50 pb-24 font-sans text-slate-800">
-      <header className="flex items-center justify-between bg-white px-4 py-3 shadow-sm border-b border-slate-100">
-        <h1 className="text-base font-bold text-[#343E4F]">Notifications</h1>
-        <button className="text-xs font-semibold text-[#E57036] hover:underline">Mark all as read</button>
-      </header>
+    <div className="min-h-screen bg-slate-50 p-6 md:p-8 font-sans text-slate-800 max-w-4xl mx-auto space-y-6">
+      <div>
+        <h1 className="text-2xl font-black text-[#343E4F]">Notification Preferences</h1>
+        <p className="text-xs text-slate-500">Choose how and when you want to receive alerts regarding market updates and orders.</p>
+      </div>
 
-      <main className="p-4 space-y-3">
-        {notificationsList.map((item) => (
-          <div key={item.id} className={`rounded-2xl p-4 shadow-sm border transition-all ${item.unread ? 'bg-[#E57036]/5 border-[#E57036]/30' : 'bg-white border-slate-100'}`}>
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-start gap-3">
-                <span className="rounded-xl bg-[#E57036]/10 p-2.5 text-[#E57036] text-sm font-mono">
-                  {item.type === 'delivery' ? 'local_shipping' : item.type === 'ai' ? 'psychology' : 'payments'}
-                </span>
-                <div>
-                  <h3 className="text-xs font-bold text-[#343E4F]">{item.title}</h3>
-                  <p className="text-xs text-slate-600 mt-1">{item.desc}</p>
-                  <span className="text-[10px] text-slate-400 mt-2 block">{item.time}</span>
-                </div>
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-6">
+        <div className="space-y-4">
+          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5"><Bell className="w-3.5 h-3.5 text-[#E57036]" /> Alert Channels</h3>
+          
+          <div className="flex items-center justify-between py-3.5 border-b border-slate-100">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-slate-100 text-[#343E4F] rounded-xl"><ShieldCheck className="w-4 h-4 text-emerald-600" /></div>
+              <div>
+                <p className="font-bold text-sm text-[#343E4F]">Order Status Updates</p>
+                <p className="text-xs text-slate-400">Get notified when orders are shipped or delivered.</p>
               </div>
-              {item.unread && <span className="h-2 w-2 rounded-full bg-[#E57036] mt-1"></span>}
             </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" defaultChecked className="sr-only peer" />
+              <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#E57036]"></div>
+            </label>
           </div>
-        ))}
-      </main>
+
+          <div className="flex items-center justify-between py-3.5 border-b border-slate-100">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-slate-100 text-[#343E4F] rounded-xl"><TrendingDown className="w-4 h-4 text-[#E57036]" /></div>
+              <div>
+                <p className="font-bold text-sm text-[#343E4F]">Price Alerts</p>
+                <p className="text-xs text-slate-400">Notifications for significant market price drops.</p>
+              </div>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" defaultChecked className="sr-only peer" />
+              <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#E57036]"></div>
+            </label>
+          </div>
+
+          <div className="flex items-center justify-between py-3.5 border-b border-slate-100">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-slate-100 text-[#343E4F] rounded-xl"><Cpu className="w-4 h-4 text-blue-600" /></div>
+              <div>
+                <p className="font-bold text-sm text-[#343E4F]">AI Market Insights</p>
+                <p className="text-xs text-slate-400">Periodic algorithmic market predictions.</p>
+              </div>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" className="sr-only peer" />
+              <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#E57036]"></div>
+            </label>
+          </div>
+
+          <div className="flex items-center justify-between py-3.5">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-slate-100 text-[#343E4F] rounded-xl"><Megaphone className="w-4 h-4 text-amber-500" /></div>
+              <div>
+                <p className="font-bold text-sm text-[#343E4F]">Promotional Offers</p>
+                <p className="text-xs text-slate-400">Marketing deals and new feature announcements.</p>
+              </div>
+            </div>
+            <label className="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" className="sr-only peer" />
+              <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#E57036]"></div>
+            </label>
+          </div>
+        </div>
+
+        <div className="pt-4 flex justify-end">
+          <button className="bg-[#E57036] text-white text-xs font-bold px-6 py-3 rounded-xl shadow-md hover:bg-[#E57036]/90 transition-all flex items-center gap-1.5">
+            <Check className="w-4 h-4" /> Save Preferences
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

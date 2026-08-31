@@ -2,7 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 
 /* Layouts */
 import BuyerLayout from "../components/layout/BuyerLayout";
-
+import FarmerLayout from "../components/layout/FarmerLayout";
 /* Public Pages */
 import LandingPage from "../pages/Landing/LandingPage";
 import AboutUs from "../pages/About/AboutUs";
@@ -16,16 +16,22 @@ import CheckoutPage from "../pages/Buyer/CheckoutPage";
 import OrdersPage from "../pages/Buyer/OrdersPage";
 import AIPage from "../pages/AI/AIPage";
 import ProfilePage from "../pages/Auth/ProfilePage";
-
-import AdminDashboard from '../pages/Admin/Dashboard';
 import OrderTracking from '../pages/Buyer/OrderTracking';
 import Profile from '../pages/Buyer/Profile';
 import Notifications from '../pages/Buyer/Notifications';
 
+/* Admin Pages */
+import AdminDashboard from '../pages/Admin/Dashboard';
+
+/* Farmer Pages */
+import FarmerDashboard from "../pages/Farmer/FarmerDashboard";
+import FarmerProfile from "../pages/Farmer/FarmerProfile";
+/* Change this line */
+import CropRecommendation from "../pages/ai/CropRecommendation";
+
 function AppRoutes() {
   return (
     <Routes>
-
       {/* =====================================================
           PUBLIC PAGES
       ====================================================== */}
@@ -54,51 +60,41 @@ function AppRoutes() {
         />
 
         {/* Dashboard */}
-        <Route
-          path="dashboard"
-          element={<BuyerDashboard />}
-        />
+        <Route path="dashboard" element={<BuyerDashboard />}  />
 
         {/* Marketplace */}
-        <Route
-          path="marketplace"
-          element={<MarketplacePage />}
-        />
+        <Route path="marketplace" element={<MarketplacePage />}  />
 
         {/* Product Details */}
-        <Route
-          path="product/:id"
-          element={<ProductDetailPage />}
-        />
+        <Route path="product/:id"  element={<ProductDetailPage />}  />
 
         {/* Checkout */}
-        <Route
-          path="checkout"
-          element={<CheckoutPage />}
-        />
+        <Route path="checkout"   element={<CheckoutPage />} />
 
         {/* Orders */}
-        <Route
-          path="orders"
-          element={<OrdersPage />}
-        />
+        <Route  path="orders"   element={<OrdersPage />} />
 
         {/* AI Advisor */}
-        <Route
-          path="ai"
-          element={<AIPage />}
-        />
+        <Route  path="ai"  element={<AIPage />}  />
 
         {/* Profile */}
-        <Route
-          path="profile"
-          element={<ProfilePage />}
-        />
+        <Route path="profile" element={<ProfilePage />} />
         <Route path="tracking" element={<OrderTracking />} />
         <Route path="user-profile" element={<Profile />} />
         <Route path="notifications" element={<Notifications />} />
       </Route>
+  
+{/* FARMER SECTION */}
+      <Route path="/farmer" element={<FarmerLayout />}>
+        <Route index element={<Navigate to="/farmer/dashboard" replace />} />
+        <Route path="dashboard" element={<FarmerDashboard />} />
+        <Route path="profile" element={<FarmerProfile />} />
 
+      </Route>
+          <Route path="ai/crop-recommendation" element={<CropRecommendation />} />
+  {/* =====================================================
+         ADMIN SECTION
+      ====================================================== */}
      <Route path="/admin/dashboard" element={<AdminDashboard />} />
       {/* =====================================================
           LEGACY SHORT ROUTES
@@ -164,18 +160,21 @@ function AppRoutes() {
           />
         }
       />
-
+        
+  
 
       {/* =====================================================
           FALLBACK
       ====================================================== */}
 
-      <Route
+        <Route
         path="*"
         element={<Navigate to="/" replace />}
       />
+     
 
     </Routes>
+
   );
 }
 
