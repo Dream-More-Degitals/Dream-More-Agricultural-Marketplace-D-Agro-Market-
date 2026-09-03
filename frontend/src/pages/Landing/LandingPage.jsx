@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 import {
   ArrowRight,
   MapPin,
@@ -8,6 +10,12 @@ import {
   MessageSquare,
 } from "lucide-react";
 
+// Images
+import heroFarm from "../../assets/images/hero-farm.jpg";
+import coffeeImage from "../../assets/images/coffee.jpg";
+import teffImage from "../../assets/images/teff.jpg";
+import honeyImage from "../../assets/images/honey.jpg";
+
 function LandingPage() {
   return (
     <div className="w-full bg-[#F8F9FA]">
@@ -15,14 +23,14 @@ function LandingPage() {
       {/* =========================
           HERO SECTION
       ========================== */}
-      <section className="px-4 pb-10 pt-14 sm:px-6 lg:pt-20">
+      <section className="px-4 pb-10 pt-12 sm:px-6 lg:pb-16 lg:pt-20">
         <div className="mx-auto max-w-7xl">
 
-          <div className="grid items-center gap-10 lg:grid-cols-2">
+          <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
 
-            {/* LEFT */}
-            <div>
-              {/* Small orange line */}
+            {/* LEFT CONTENT */}
+            <div className="order-2 lg:order-1">
+
               <div className="mb-5 h-1 w-10 rounded-full bg-[#E57036]" />
 
               <h1 className="max-w-xl text-4xl font-bold leading-[1.08] tracking-tight text-[#343E4F] sm:text-5xl lg:text-[52px]">
@@ -37,59 +45,75 @@ function LandingPage() {
 
               <div className="mt-7 flex flex-wrap gap-3">
 
-                <button className="flex items-center gap-2 rounded-lg bg-[#E57036] px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90">
+                <Link
+                  to="/register"
+                  className="flex items-center gap-2 rounded-lg bg-[#E57036] px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+                >
                   Join the Market
                   <ArrowRight size={16} />
-                </button>
+                </Link>
 
-                <button className="rounded-lg bg-gray-200 px-6 py-3 text-sm font-semibold text-[#E57036] transition hover:bg-gray-300">
+                <Link
+                  to="/ai"
+                  className="rounded-lg bg-gray-200 px-6 py-3 text-sm font-semibold text-[#E57036] transition hover:bg-gray-300"
+                >
                   Talk to AI Advisor
-                </button>
+                </Link>
 
               </div>
             </div>
 
             {/* RIGHT IMAGE */}
-            <div className="relative mx-auto w-full max-w-xl">
+            <div className="order-1 relative mx-auto w-full max-w-xl lg:order-2">
 
               <div className="overflow-hidden rounded-2xl shadow-xl">
+
                 <img
-                  src="/images/hero-farm.jpg"
+                  src={heroFarm}
                   alt="Ethiopian agricultural landscape"
-                  className="h-[300px] w-full object-cover sm:h-[350px] lg:h-[390px]"
+                  className="block h-[280px] w-full object-cover sm:h-[350px] lg:h-[410px]"
                 />
+
               </div>
 
               {/* Soil Health */}
-              <div className="absolute left-4 top-4 rounded-xl bg-white px-5 py-3 shadow-lg sm:left-5 sm:top-5">
+              <div className="absolute left-3 top-3 rounded-xl bg-white px-4 py-3 shadow-lg sm:left-5 sm:top-5 sm:px-5">
+
                 <p className="text-xs font-semibold text-[#343E4F]">
                   Soil Health:
                   <span className="text-[#E57036]"> 94%</span>
                 </p>
 
                 <div className="mt-2 h-1.5 w-20 overflow-hidden rounded-full bg-gray-200">
+
                   <div className="h-full w-[94%] rounded-full bg-[#E57036]" />
+
                 </div>
+
               </div>
 
               {/* Price Forecast */}
-              <div className="absolute bottom-4 right-4 flex items-center gap-2 rounded-xl bg-white px-5 py-4 shadow-lg sm:bottom-5 sm:right-5">
-                <TrendingUp size={15} className="text-[#E57036]" />
+              <div className="absolute bottom-3 right-3 flex items-center gap-2 rounded-xl bg-white px-4 py-3 shadow-lg sm:bottom-5 sm:right-5 sm:px-5">
+
+                <TrendingUp
+                  size={15}
+                  className="text-[#E57036]"
+                />
 
                 <span className="text-xs font-semibold text-[#E57036]">
                   Price Forecast +12%
                 </span>
+
               </div>
 
             </div>
+
           </div>
 
-          {/* =========================
-              SEARCH BAR
-          ========================== */}
+          {/* SEARCH BAR */}
           <div className="mt-10 rounded-xl bg-white p-4 shadow-lg">
 
-            <div className="grid gap-3 md:grid-cols-[1fr_150px_130px]">
+            <div className="grid gap-3 md:grid-cols-[1fr_150px_170px]">
 
               {/* Search */}
               <div className="flex items-center gap-3 rounded-lg border border-gray-200 px-4">
@@ -108,20 +132,24 @@ function LandingPage() {
               </div>
 
               {/* Location */}
-              <button className="flex items-center justify-center gap-2 rounded-lg border border-gray-200 px-4 py-3 text-sm text-gray-600">
-
+              <button
+                type="button"
+                className="flex items-center justify-center gap-2 rounded-lg border border-gray-200 px-4 py-3 text-sm text-gray-600 transition hover:bg-gray-50"
+              >
                 <MapPin size={16} />
-
                 Oromia
-
               </button>
 
-              {/* Search button */}
-              <button className="rounded-lg bg-[#E57036] px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90">
+              {/* Search */}
+              <Link
+                to="/marketplace"
+                className="flex items-center justify-center rounded-lg bg-[#E57036] px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+              >
                 Find Opportunities
-              </button>
+              </Link>
 
             </div>
+
           </div>
 
         </div>
@@ -135,7 +163,6 @@ function LandingPage() {
 
         <div className="mx-auto max-w-7xl">
 
-          {/* Heading */}
           <div className="mb-8 flex items-end justify-between">
 
             <div>
@@ -148,13 +175,13 @@ function LandingPage() {
               </p>
             </div>
 
-            <a
-              href="/marketplace"
+            <Link
+              to="/marketplace"
               className="hidden items-center gap-1 text-xs font-semibold text-[#E57036] sm:flex"
             >
               View All Market
               <ArrowRight size={14} />
-            </a>
+            </Link>
 
           </div>
 
@@ -163,7 +190,7 @@ function LandingPage() {
           <div className="grid gap-5 md:grid-cols-3">
 
             <ProductCard
-              image="/images/coffee.jpg"
+              image={coffeeImage}
               name="Premium Arabica"
               badge="TOP GRADE"
               location="Sidama Region"
@@ -172,7 +199,7 @@ function LandingPage() {
             />
 
             <ProductCard
-              image="/images/teff.jpg"
+              image={teffImage}
               name="White Teff (Magna)"
               badge="ORGANIC"
               location="Debre Zeit"
@@ -181,7 +208,7 @@ function LandingPage() {
             />
 
             <ProductCard
-              image="/images/honey.jpg"
+              image={honeyImage}
               name="Wild Forest Honey"
               badge="NATURAL"
               location="Jimma Forest"
@@ -216,7 +243,6 @@ function LandingPage() {
 
           </div>
 
-
           <div className="mt-10 grid gap-6 md:grid-cols-3">
 
             <AIService
@@ -224,6 +250,7 @@ function LandingPage() {
               title="Disease Detection"
               description="Upload a photo of your crop to instantly identify pests or diseases with 98% accuracy using our vision AI."
               action="Scan Now"
+              link="/ai"
             />
 
             <AIService
@@ -231,6 +258,7 @@ function LandingPage() {
               title="Price Prediction"
               description="Predict upcoming market prices based on weather patterns, global demand, and regional harvest data."
               action="View Analytics"
+              link="/ai"
             />
 
             <AIService
@@ -238,6 +266,7 @@ function LandingPage() {
               title="AI Chatbot"
               description="Get 24/7 agricultural advice in Amharic, Oromo, and English. Ask about planting dates, fertilizers, or logistics."
               action="Start Chatting"
+              link="/ai"
             />
 
           </div>
@@ -285,7 +314,6 @@ function LandingPage() {
             Trusted by the Community
           </h2>
 
-
           <div className="mt-10 grid gap-6 md:grid-cols-2">
 
             <Testimonial
@@ -327,7 +355,6 @@ function LandingPage() {
 
           </div>
 
-
           <div className="mx-auto mt-10 grid max-w-3xl gap-5 md:grid-cols-2">
 
             {/* Farmer */}
@@ -342,9 +369,12 @@ function LandingPage() {
                 facilities based on harvest data.
               </p>
 
-              <button className="mt-5 w-full rounded-lg bg-[#E57036] px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90">
+              <Link
+                to="/register"
+                className="mt-5 flex w-full justify-center rounded-lg bg-[#E57036] px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+              >
                 Get Started
-              </button>
+              </Link>
 
             </div>
 
@@ -361,9 +391,12 @@ function LandingPage() {
                 bulk inventory through the app.
               </p>
 
-              <button className="mt-5 w-full rounded-lg bg-white px-4 py-3 text-sm font-semibold text-[#343E4F] transition hover:bg-gray-100">
+              <Link
+                to="/register"
+                className="mt-5 flex w-full justify-center rounded-lg bg-white px-4 py-3 text-sm font-semibold text-[#343E4F] transition hover:bg-gray-100"
+              >
                 Sign Up Now
-              </button>
+              </Link>
 
             </div>
 
@@ -393,13 +426,12 @@ function ProductCard({
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
 
-      {/* Image */}
       <div className="relative">
 
         <img
           src={image}
           alt={name}
-          className="h-48 w-full object-cover"
+          className="block h-48 w-full object-cover"
         />
 
         <span className="absolute right-3 top-3 rounded bg-white px-2 py-1 text-[9px] font-bold text-gray-600 shadow">
@@ -408,8 +440,6 @@ function ProductCard({
 
       </div>
 
-
-      {/* Details */}
       <div className="p-4">
 
         <h3 className="text-sm font-semibold text-[#343E4F]">
@@ -420,19 +450,19 @@ function ProductCard({
           {location} • {quantity}
         </p>
 
-
         <div className="mt-4 flex items-center justify-between">
 
           <span className="text-sm font-bold text-[#E57036]">
             {price}
           </span>
 
-          <button
+          <Link
+            to="/marketplace"
             className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#E57036] text-white transition hover:opacity-90"
-            aria-label={`Add ${name} to cart`}
+            aria-label={`View ${name}`}
           >
             <ShoppingCart size={16} />
-          </button>
+          </Link>
 
         </div>
 
@@ -452,11 +482,11 @@ function AIService({
   title,
   description,
   action,
+  link,
 }) {
   return (
     <div className="rounded-xl border border-gray-200 border-t-2 border-t-[#E57036] bg-white p-6 shadow-sm">
 
-      {/* Icon */}
       <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-lg bg-orange-50 text-[#E57036]">
         {icon}
       </div>
@@ -469,10 +499,13 @@ function AIService({
         {description}
       </p>
 
-      <button className="mt-5 flex items-center gap-1 text-xs font-semibold text-[#E57036]">
+      <Link
+        to={link}
+        className="mt-5 flex items-center gap-1 text-xs font-semibold text-[#E57036]"
+      >
         {action}
         <ArrowRight size={14} />
-      </button>
+      </Link>
 
     </div>
   );
@@ -523,6 +556,7 @@ function Testimonial({
         </div>
 
         <div>
+
           <p className="text-xs font-semibold text-[#343E4F]">
             {name}
           </p>
@@ -530,6 +564,7 @@ function Testimonial({
           <p className="text-[10px] text-gray-500">
             {role}
           </p>
+
         </div>
 
       </div>

@@ -16,7 +16,9 @@ function Footer() {
           <div className="md:col-span-1">
 
             <div className="mb-5 flex items-center gap-2">
-              <div className="h-8 w-8 bg-white"></div>
+              <div className="h-8 w-8 bg-white">
+                
+              </div>
 
               <span className="text-lg font-bold">
                 D-Agro AI

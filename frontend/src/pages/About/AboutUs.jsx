@@ -22,7 +22,7 @@ function AboutUs() {
         <div className="relative h-[420px] w-full sm:h-[500px] lg:h-[560px]">
 
           <img
-            src="/images/about-hero.jpg"
+            src="/src/assets/images/About.jpg"
             alt="Ethiopian agriculture"
             className="absolute inset-0 h-full w-full object-cover"
           />
@@ -48,11 +48,7 @@ function AboutUs() {
                 through Intelligence
               </h1>
 
-              <p className="mx-auto mt-5 max-w-xl text-sm leading-6 text-gray-200 sm:mx-0 sm:text-base lg:text-lg">
-                Connecting traditional agriculture with cutting-edge AI to
-                create a more resilient, transparent, and profitable
-                ecosystem for every farmer.
-              </p>
+             
 
             </div>
 
@@ -217,65 +213,123 @@ function AboutUs() {
 
 
       {/* =====================================================
-          TEAM
-      ====================================================== */}
-      <section className="bg-white px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
+    TEAM
+====================================================== */}
+<section className="bg-white px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
+  <div className="mx-auto max-w-7xl">
 
-        <div className="mx-auto max-w-7xl">
+    {/* Section Header */}
+    <div className="mx-auto mb-12 max-w-2xl text-center">
+      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#E57036]">
+        Our Team
+      </p>
 
-          {/* Heading */}
-          <div className="mb-10 text-center">
+      <h2 className="mt-2 text-2xl font-bold tracking-tight text-[#343E4F] sm:text-3xl lg:text-4xl">
+        The Minds Behind D-Agro
+      </h2>
 
-            <p className="text-xs font-semibold uppercase tracking-widest text-[#E57036]">
-              Our Team
-            </p>
+      <p className="mt-4 text-sm leading-6 text-gray-500 sm:text-base">
+        A passionate team working together to transform agriculture in
+        Ethiopia through technology, innovation, and AI.
+      </p>
+    </div>
 
-            <h2 className="mt-2 text-2xl font-bold text-[#343E4F] sm:text-3xl">
-              The Minds Behind D-Agro
-            </h2>
+    {/* Team Members */}
+    <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
 
-            <p className="mx-auto mt-3 max-w-2xl text-sm leading-6 text-gray-500">
-              A multidisciplinary team of Ethiopian engineers, agronomists,
-              and data scientists dedicated to local innovation.
-            </p>
-
-          </div>
-
-
-          {/* Team members */}
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-
-            <TeamCard
-              image="/images/team/daniel.jpg"
-              name="Daniel Solomon"
-              role="Chief Executive Officer"
-            />
-
-            <TeamCard
-              image="/images/team/selamawit.jpg"
-              name="Selamawit Tadesse"
-              role="Head of AI Research"
-            />
-
-            <TeamCard
-              image="/images/team/kassahun.jpg"
-              name="Kassahun Bekele"
-              role="Operations Director"
-            />
-
-            <TeamCard
-              image="/images/team/marta.jpg"
-              name="Marta Haile"
-              role="Market Relations Lead"
-            />
-
-          </div>
-
+      {/* ABEBE EYAYU */}
+      <div className="group rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#E57036]/30 hover:shadow-lg">
+        <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-[#E57036] text-3xl font-bold text-white shadow-md transition duration-300 group-hover:scale-105">
+          AE
         </div>
 
-      </section>
+        <h3 className="mt-5 text-sm font-bold uppercase tracking-wide text-[#343E4F]">
+          ABEBE EYAYU
+        </h3>
 
+        <p className="mt-2 text-xs font-medium leading-5 text-[#E57036]">
+          CEO & Co-Founder
+        </p>
+      </div>
 
+      {/* ABAY KASA */}
+      <div className="group rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#E57036]/30 hover:shadow-lg">
+        <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-[#E57036] text-3xl font-bold text-white shadow-md transition duration-300 group-hover:scale-105">
+          AK
+        </div>
+
+        <h3 className="mt-5 text-sm font-bold uppercase tracking-wide text-[#343E4F]">
+          ABAY KASA
+        </h3>
+
+        <p className="mt-2 text-xs font-medium leading-5 text-[#E57036]">
+          Academic Leader & Co-Founder
+        </p>
+      </div>
+
+      {/* BETELHEM ZARADAWIT */}
+      <div className="group rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#E57036]/30 hover:shadow-lg">
+        <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-[#E57036] text-3xl font-bold text-white shadow-md transition duration-300 group-hover:scale-105">
+          BZ
+        </div>
+
+        <h3 className="mt-5 text-sm font-bold uppercase tracking-wide text-[#343E4F]">
+          BETELHEM ZARADAWIT
+        </h3>
+
+        <p className="mt-2 text-xs font-medium leading-5 text-[#E57036]">
+          Digital Marketer & Co-Founder
+        </p>
+      </div>
+
+      {/* ABEL TILAHUN */}
+      <div className="group rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#E57036]/30 hover:shadow-lg">
+        <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-[#E57036] text-3xl font-bold text-white shadow-md transition duration-300 group-hover:scale-105">
+          AT
+        </div>
+
+        <h3 className="mt-5 text-sm font-bold uppercase tracking-wide text-[#343E4F]">
+          ABEL TILAHUN
+        </h3>
+
+        <p className="mt-2 text-xs font-medium leading-5 text-[#E57036]">
+          Production Leader
+        </p>
+      </div>
+
+      {/* BEREKET SMIE */}
+      <div className="group rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#E57036]/30 hover:shadow-lg">
+        <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-[#E57036] text-3xl font-bold text-white shadow-md transition duration-300 group-hover:scale-105">
+          BS
+        </div>
+
+        <h3 className="mt-5 text-sm font-bold uppercase tracking-wide text-[#343E4F]">
+          BEREKET SMIE
+        </h3>
+
+        <p className="mt-2 text-xs font-medium leading-5 text-[#E57036]">
+          Marketing Leader
+        </p>
+      </div>
+
+      {/* MIKIYAS */}
+      <div className="group rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-sm transition duration-300 hover:-translate-y-1 hover:border-[#E57036]/30 hover:shadow-lg">
+        <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-[#E57036] text-3xl font-bold text-white shadow-md transition duration-300 group-hover:scale-105">
+          M
+        </div>
+
+        <h3 className="mt-5 text-sm font-bold uppercase tracking-wide text-[#343E4F]">
+          MIKIYAS
+        </h3>
+
+        <p className="mt-2 text-xs font-medium leading-5 text-[#E57036]">
+          Software Development Leader
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
       {/* =====================================================
           FINAL CTA
       ====================================================== */}

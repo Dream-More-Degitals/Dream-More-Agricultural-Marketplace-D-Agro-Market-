@@ -16,6 +16,7 @@ import {
   X,
 } from "lucide-react";
 import { useCart } from "../../context/CartContext";
+import RoleSwitcher from "../common/RoleSwitcher";
 
 /* ── Nav item definition ── */
 const NAV_ITEMS = [
@@ -95,6 +96,15 @@ function Sidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }) {
             );
           })}
         </nav>
+        {/* ROLE SWITCHER */}
+
+<div className="px-4 pb-4">
+  <RoleSwitcher currentRole="transporter" />
+</div>
+
+{/* LOGOUT */}
+
+<div className="border-t border-white/10 p-4"></div>
 
         {/* Bottom: Cart / Sign Out */}
         <div className={`border-t border-white/10 py-4 space-y-1 ${collapsed ? "px-2" : "px-3"}`}>

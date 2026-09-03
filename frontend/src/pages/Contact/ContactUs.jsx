@@ -35,32 +35,29 @@ function ContactUs() {
           <div>
 
             <h2 className="text-2xl font-bold text-[#343E4F]">
-              Let's Talk
+              Contact Information
             </h2>
 
-            <p className="mt-3 text-sm leading-6 text-gray-600">
-              Whether you are a farmer, buyer, supplier, or transport
-              provider, we would love to hear from you.
-            </p>
+            
 
             <div className="mt-8 space-y-5">
 
               <ContactInfo
                 icon={<Mail size={20} />}
                 title="Email"
-                value="info@dagromarket.ai"
+                value="suport@dreammoredigitals.com"
               />
 
               <ContactInfo
                 icon={<Phone size={20} />}
                 title="Phone"
-                value="+251 900 000 000"
+                value="+251993132122"
               />
 
               <ContactInfo
                 icon={<MapPin size={20} />}
                 title="Location"
-                value="Addis Ababa, Ethiopia"
+                value="signal mall 8th floor,bahrdar, Ethiopia"
               />
 
             </div>
