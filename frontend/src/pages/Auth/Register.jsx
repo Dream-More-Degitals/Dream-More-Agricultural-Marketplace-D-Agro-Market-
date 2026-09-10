@@ -13,22 +13,39 @@ function Register() {
   });
 
   const roles = [
-    { id: "farmer", label: "Farmer", icon: "🌾" },
-    { id: "buyer", label: "Buyer", icon: "🛒" },
-    { id: "supplier", label: "Supplier", icon: "📦" },
-    { id: "transporter", label: "Transporter", icon: "🚚" },
+    {
+      id: "farmer",
+      label: "Farmer",
+      icon: "🌾",
+    },
+    {
+      id: "buyer",
+      label: "Buyer",
+      icon: "🛒",
+    },
+    {
+      id: "supplier",
+      label: "Supplier",
+      icon: "📦",
+    },
+    {
+      id: "transporter",
+      label: "Transporter",
+      icon: "🚚",
+    },
   ];
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
   const handleRoleChange = (role) => {
     setFormData((prev) => ({
       ...prev,
+
       roles: prev.roles.includes(role)
         ? prev.roles.filter((item) => item !== role)
         : [...prev.roles, role],
@@ -43,8 +60,49 @@ function Register() {
       return;
     }
 
-    // Temporary frontend registration
-    localStorage.setItem("user", JSON.stringify(formData));
+    /*
+      Save registration information.
+
+      This information will later be used
+      by the common ProfilePage.
+    */
+
+    const userData = {
+      name: formData.name.trim(),
+      email: formData.email.trim(),
+      password: formData.password,
+      roles: formData.roles,
+
+      createdAt: new Date().toISOString(),
+
+      profile: {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: "",
+        location: "",
+        bio: "",
+        farmName: "",
+        farmType: "",
+        businessName: "",
+        vehicleType: "",
+      },
+    };
+
+    localStorage.setItem(
+      "user",
+      JSON.stringify(userData)
+    );
+
+    /*
+      Also save a separate profile object.
+      This makes it easy for ProfilePage to use
+      the registration information.
+    */
+
+    localStorage.setItem(
+      "profile",
+      JSON.stringify(userData.profile)
+    );
 
     alert("Account created successfully!");
 
@@ -53,10 +111,12 @@ function Register() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-10">
+
       <div className="w-full max-w-2xl bg-white rounded-2xl shadow-lg p-6 sm:p-8">
 
         {/* Header */}
         <div className="text-center mb-8">
+
           <div className="mx-auto w-14 h-14 rounded-full bg-[#E57036] flex items-center justify-center text-white">
             <UserPlus size={28} />
           </div>
@@ -68,12 +128,15 @@ function Register() {
           <p className="text-gray-500 mt-2">
             Join D-Agro Agricultural Marketplace
           </p>
+
         </div>
+
 
         <form onSubmit={handleSubmit}>
 
-          {/* Name */}
+          {/* Full Name */}
           <div className="mb-5">
+
             <label className="block text-sm font-medium text-[#343E4F] mb-2">
               Full Name
             </label>
@@ -87,10 +150,13 @@ function Register() {
               required
               className="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#E57036]"
             />
+
           </div>
+
 
           {/* Email */}
           <div className="mb-5">
+
             <label className="block text-sm font-medium text-[#343E4F] mb-2">
               Email Address
             </label>
@@ -104,10 +170,13 @@ function Register() {
               required
               className="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#E57036]"
             />
+
           </div>
+
 
           {/* Password */}
           <div className="mb-7">
+
             <label className="block text-sm font-medium text-[#343E4F] mb-2">
               Password
             </label>
@@ -122,10 +191,13 @@ function Register() {
               minLength={6}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#E57036]"
             />
+
           </div>
+
 
           {/* Roles */}
           <div className="mb-7">
+
             <h2 className="text-lg font-semibold text-[#343E4F] mb-2">
               Choose Your Role(s)
             </h2>
@@ -134,21 +206,28 @@ function Register() {
               You can select more than one role.
             </p>
 
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
               {roles.map((role) => {
-                const selected = formData.roles.includes(role.id);
+
+                const selected =
+                  formData.roles.includes(role.id);
 
                 return (
                   <button
                     type="button"
                     key={role.id}
-                    onClick={() => handleRoleChange(role.id)}
+                    onClick={() =>
+                      handleRoleChange(role.id)
+                    }
                     className={`relative flex items-center gap-3 p-4 rounded-xl border-2 text-left transition ${
                       selected
                         ? "border-[#E57036] bg-orange-50"
                         : "border-gray-200 hover:border-[#E57036]"
                     }`}
                   >
+
                     <span className="text-3xl">
                       {role.icon}
                     </span>
@@ -162,11 +241,16 @@ function Register() {
                         <Check size={15} />
                       </span>
                     )}
+
                   </button>
                 );
+
               })}
+
             </div>
+
           </div>
+
 
           {/* Submit */}
           <button
@@ -175,19 +259,26 @@ function Register() {
           >
             Create Account
           </button>
+
         </form>
+
 
         {/* Login */}
         <p className="text-center text-sm text-gray-500 mt-6">
+
           Already have an account?{" "}
+
           <Link
             to="/login"
             className="text-[#E57036] font-semibold hover:underline"
           >
             Sign In
           </Link>
+
         </p>
+
       </div>
+
     </div>
   );
 }

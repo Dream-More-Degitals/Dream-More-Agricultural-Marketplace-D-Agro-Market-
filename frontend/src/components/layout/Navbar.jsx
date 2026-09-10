@@ -12,13 +12,10 @@ function Navbar() {
       name: "Home",
       path: "/",
     },
-    {
-      name: "Market",
-      path: "/buyer/marketplace",
-    },
+    
     {
       name: "AI Advisor",
-      path: "/buyer/ai",
+      path: "/ai/advisor",
     },
     {
       name: "About",
@@ -89,14 +86,14 @@ function Navbar() {
         <div className="flex items-center gap-2 sm:gap-3">
 
           {/* Notification */}
-          <button
-            type="button"
-            className="rounded-full p-2 transition hover:bg-white/10"
-            aria-label="Notifications"
+          <Link
+            to="/notifications"
+            className="hidden rounded-lg  px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90 sm:block"
           >
             <Bell size={18} />
-          </button>
 
+          </Link>
+         
 
           {/* Sign In - Desktop */}
           <Link
@@ -109,7 +106,7 @@ function Navbar() {
 
           {/* Profile */}
           <Link
-            to="/profile"
+            to="/profilepage"
             className="rounded-full transition hover:opacity-80"
             aria-label="Profile"
           >

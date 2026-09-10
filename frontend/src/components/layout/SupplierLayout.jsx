@@ -2,9 +2,11 @@ import { NavLink, Outlet, Link } from "react-router-dom";
 import {
   LayoutDashboard,
   Package,
+  ShoppingBag,
   Menu,
   X,
   Bell,
+  Bot,
   UserCircle,
   LogOut,
 } from "lucide-react";
@@ -25,6 +27,16 @@ function SupplierLayout() {
       path: "/supplier/products",
       icon: <Package size={20} />,
     },
+    {
+      name: "Orders",
+      path: "/supplier/orders",
+      icon: <ShoppingBag size={20} />,
+    },
+    {
+    name: "AI Advisor",
+    path: "/ai/advisor",
+    icon: <Bot size={20} />,
+  },
   ];
 
   return (
@@ -124,13 +136,15 @@ function SupplierLayout() {
 
 
         {/* ROLE SWITCHER */}
-<div className="px-3 pb-3">
-  <RoleSwitcher currentRole="supplier" />
-</div>
+        <div className="px-3 pb-3">
+          <RoleSwitcher currentRole="supplier" />
+        </div>
 
-{/* BOTTOM MENU */}
-<div className="border-t border-white/10 p-3">
 
+        {/* BOTTOM MENU */}
+        <div className="border-t border-white/10 p-3">
+
+          {/* PROFILE */}
           <Link
             to="/supplier/profile"
             className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-gray-300 transition hover:bg-white/10 hover:text-white"
@@ -139,6 +153,8 @@ function SupplierLayout() {
             Profile
           </Link>
 
+
+          {/* LOGOUT */}
           <Link
             to="/"
             className="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-gray-300 transition hover:bg-white/10 hover:text-white"
@@ -164,14 +180,18 @@ function SupplierLayout() {
             </h2>
           </div>
 
+
           <div className="flex items-center gap-5">
 
+            {/* NOTIFICATION */}
             <button className="relative text-[#343E4F]">
               <Bell size={20} />
 
               <span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-[#E57036]" />
             </button>
 
+
+            {/* ACCOUNT */}
             <Link
               to="/supplier/profile"
               className="flex items-center gap-2 text-sm font-medium text-[#343E4F]"

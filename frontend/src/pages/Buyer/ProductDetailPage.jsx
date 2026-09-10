@@ -1,307 +1,439 @@
-import React, { useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useParams } from "react-router-dom";
 import {
-  ChevronLeft,
-  ChevronRight,
-  Heart,
-  Star,
-  Sparkles,
-  ShieldCheck,
-  MessageSquare,
+  ArrowLeft,
+  MapPin,
+  Package,
   ShoppingCart,
-  ArrowRight,
-  UserCheck
+  Minus,
+  Plus,
+  CheckCircle,
 } from "lucide-react";
-import { useCart } from "../../context/CartContext";
 
-function ProductDetailPage() {
+const defaultProducts = [
+  {
+    id: "white-teff-magna",
+    slug: "white-teff-magna",
+    name: "White Teff (Magna)",
+    category: "Grains & Legumes",
+    location: "Gojam, Amhara Region",
+    description:
+      "High-grade Magna Teff, iron-rich and gluten-free.",
+    price: 180,
+    unit: "kg",
+    stock: 100,
+    seller: "D-Agro Farmer",
+    image: "/images/teff.jpg",
+  },
+  {
+    id: "yirgacheffe-coffee",
+    slug: "yirgacheffe-coffee",
+    name: "Yirgacheffe Coffee",
+    category: "Coffee",
+    location: "Gedeo, SNNPR",
+    description:
+      "Grade 1 Arabica beans with distinct floral and citrus notes.",
+    price: 850,
+    unit: "kg",
+    stock: 50,
+    seller: "D-Agro Farmer",
+    image: "/images/coffee.jpg",
+  },
+  {
+    id: "red-onions",
+    slug: "red-onions",
+    name: "Red Onions",
+    category: "Vegetables",
+    location: "Meki, Oromia Region",
+    description:
+      "Firm, high-flavor red onions. Bulk discount available.",
+    price: 120,
+    unit: "kg",
+    stock: 200,
+    seller: "D-Agro Farmer",
+    image: "/images/onions.jpg",
+  },
+  {
+    id: "niger-seed-oil",
+    slug: "niger-seed-oil",
+    name: "Niger Seed Oil (Nug)",
+    category: "Oils & Seeds",
+    location: "Wollega, Oromia",
+    description:
+      "Cold-pressed pure Nug oil. Rich in Omega-3.",
+    price: 450,
+    unit: "liter",
+    stock: 80,
+    seller: "D-Agro Farmer",
+    image: "/images/niger-oil.jpg",
+  },
+];
+
+export default function ProductDetailPage() {
   const { id } = useParams();
-  const navigate = useNavigate();
-  const { products, addToCart, wishlist, toggleWishlist } = useCart();
+  const location = useLocation();
 
-  // Find product by id or default to Sidama Coffee
-  const product =
-    products.find((p) => p.id === id) || products[0];
+  const [product, setProduct] = useState(
+    location.state?.product || null
+  );
 
-  const [selectedImg, setSelectedImg] = useState(0);
-  const isWishlisted = wishlist.includes(product.id);
+  const [quantity, setQuantity] = useState(1);
+  const [added, setAdded] = useState(false);
 
-  const images = product.thumbnails && product.thumbnails.length > 0
-    ? product.thumbnails
-    : [product.image];
+  useEffect(() => {
+    // If Marketplace already sent the product,
+    // use it directly.
+    if (location.state?.product) {
+      setProduct(location.state.product);
+      return;
+    }
 
-  const handleBuyNow = () => {
-    addToCart(product, 1);
-    navigate("/buyer/checkout");
+    try {
+      const farmerProducts = JSON.parse(
+        localStorage.getItem("farmerProducts") || "[]"
+      );
+
+      const supplierProducts = JSON.parse(
+        localStorage.getItem("supplierProducts") || "[]"
+      );
+
+      const allProducts = [
+        ...defaultProducts,
+        ...farmerProducts.map((item) => ({
+          ...item,
+          slug: `farmer-${item.id}`,
+          seller: item.seller || "Farmer",
+        })),
+        ...supplierProducts.map((item) => ({
+          ...item,
+          slug: `supplier-${item.id}`,
+          seller: item.seller || "Supplier",
+        })),
+      ];
+
+      const foundProduct = allProducts.find(
+        (item) =>
+          String(item.id) === String(id) ||
+          String(item.slug) === String(id)
+      );
+
+      setProduct(foundProduct || null);
+    } catch (error) {
+      console.error(
+        "Failed to load product:",
+        error
+      );
+
+      setProduct(null);
+    }
+  }, [id, location.state]);
+
+  const increaseQuantity = () => {
+    if (!product) return;
+
+    const stock = Number(product.stock || 0);
+
+    setQuantity((current) =>
+      current < stock ? current + 1 : current
+    );
   };
 
-  return (
-    <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 pt-4 pb-28 space-y-6">
-      
-      {/* Breadcrumb Navigation */}
-      <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500 overflow-x-auto py-1">
-        <Link to="/buyer/marketplace" className="hover:text-[#E57036] transition shrink-0">
-          Marketplace
-        </Link>
-        <ChevronRight size={12} className="shrink-0" />
-        <span className="hover:text-[#E57036] transition cursor-pointer shrink-0">
-          {product.category} & Beverages
-        </span>
-        <ChevronRight size={12} className="shrink-0" />
-        <span className="text-[#343E4F] font-bold truncate">{product.title}</span>
-      </nav>
+  const decreaseQuantity = () => {
+    setQuantity((current) =>
+      current > 1 ? current - 1 : 1
+    );
+  };
 
-      {/* Main Image Gallery */}
-      <div className="space-y-3">
-        <div className="relative h-72 sm:h-96 w-full overflow-hidden rounded-3xl bg-slate-900 shadow-md">
-          <img
-            src={images[selectedImg] || product.image}
-            alt={product.title}
-            className="h-full w-full object-cover transition-all duration-300"
+  const addToCart = () => {
+    if (!product) return;
+
+    try {
+      const existingCart = JSON.parse(
+        localStorage.getItem("cart") || "[]"
+      );
+
+      const productId =
+        product.id || product.slug;
+
+      const existingItemIndex =
+        existingCart.findIndex(
+          (item) =>
+            String(item.id || item.slug) ===
+            String(productId)
+        );
+
+      if (existingItemIndex !== -1) {
+        existingCart[
+          existingItemIndex
+        ].quantity += quantity;
+      } else {
+        existingCart.push({
+          ...product,
+          id: productId,
+          quantity,
+        });
+      }
+
+      localStorage.setItem(
+        "cart",
+        JSON.stringify(existingCart)
+      );
+
+      setAdded(true);
+
+      setTimeout(() => {
+        setAdded(false);
+      }, 2500);
+    } catch (error) {
+      console.error(
+        "Failed to add product to cart:",
+        error
+      );
+    }
+  };
+
+  // ==========================================
+  // PRODUCT NOT FOUND
+  // ==========================================
+
+  if (!product) {
+    return (
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="mx-auto max-w-3xl py-20 text-center">
+
+          <Package
+            size={60}
+            className="mx-auto mb-5 text-gray-300"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
 
-          {/* Grade Badge */}
-          <div className="absolute top-4 left-4 z-10">
-            <span className="bg-[#0B6132] text-white text-[10px] sm:text-xs font-black uppercase tracking-wider px-3 py-1.5 rounded-full shadow-md">
-              {product.grade || "PREMIUM GRADE A"}
-            </span>
-          </div>
-
-          {/* Wishlist Floating Button */}
-          <button
-            onClick={() => toggleWishlist(product.id)}
-            className="absolute top-4 right-4 z-10 rounded-full bg-white/90 p-2.5 text-slate-700 backdrop-blur-md hover:scale-110 transition shadow-md"
-            aria-label="Toggle Wishlist"
-          >
-            <Heart
-              size={20}
-              className={isWishlisted ? "fill-red-500 text-red-500" : ""}
-            />
-          </button>
-        </div>
-
-        {/* Thumbnails strip */}
-        <div className="grid grid-cols-4 gap-3">
-          {images.map((img, idx) => (
-            <button
-              key={idx}
-              onClick={() => setSelectedImg(idx)}
-              className={`relative h-20 rounded-2xl overflow-hidden border-2 transition ${
-                selectedImg === idx
-                  ? "border-[#E57036] ring-2 ring-[#E57036]/30 scale-95"
-                  : "border-slate-200 opacity-70 hover:opacity-100"
-              }`}
-            >
-              <img src={img} alt={`Thumbnail ${idx}`} className="h-full w-full object-cover" />
-              {idx === 3 && images.length > 4 && (
-                <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white font-extrabold text-sm">
-                  +12
-                </div>
-              )}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Product Title & Ratings */}
-      <div className="space-y-2">
-        <div className="flex items-center justify-between gap-4">
-          <h1 className="text-2xl sm:text-3xl font-black text-[#343E4F] tracking-tight">
-            {product.title}
+          <h1 className="text-2xl font-bold text-[#343E4F]">
+            Product Not Found
           </h1>
-        </div>
 
-        <div className="flex items-center gap-3 text-xs sm:text-sm font-semibold text-slate-600 flex-wrap">
-          <div className="flex items-center gap-1 text-amber-500">
-            <div className="flex">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} size={14} className="fill-amber-400 text-amber-400" />
-              ))}
-            </div>
-            <span className="font-extrabold text-[#343E4F] ml-1">{product.rating}</span>
-            <span className="text-slate-400 font-medium">({product.reviewsCount} Reviews)</span>
-          </div>
-          <span className="text-slate-300">|</span>
-          <span className="inline-flex items-center gap-1 text-[#107C41] font-bold bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-            <ShieldCheck size={14} /> Verified Quality
-          </span>
-        </div>
+          <p className="mt-2 text-gray-500">
+            This product may have been removed or is
+            no longer available.
+          </p>
 
-        {/* Price tag */}
-        <div className="pt-2 flex items-baseline gap-2">
-          <span className="text-2xl sm:text-3xl font-black text-[#107C41]">
-            ETB {product.price.toLocaleString()}
-          </span>
-          <span className="text-sm text-slate-500 font-bold">/ {product.unit}</span>
-        </div>
-      </div>
-
-      {/* AI Market Advisor Card */}
-      <div className="rounded-2xl bg-[#EBF7F0] border border-emerald-200 p-4 sm:p-5 space-y-2">
-        <div className="flex items-center gap-2 text-[#107C41] font-extrabold text-xs tracking-wide uppercase">
-          <Sparkles size={16} className="text-[#E57036]" />
-          <span>AI Market Advisor</span>
-        </div>
-        <p className="text-xs sm:text-sm text-emerald-900 leading-relaxed font-medium">
-          {product.aiAdvice ||
-            "Current price is 8% lower than the 30-day average for Sidama Grade A. Predictive models suggest a seasonal uptick in demand next month. Recommended for bulk purchase now."}
-        </p>
-      </div>
-
-      {/* Seller Profile Card */}
-      <div className="flex items-center justify-between p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
-        <div className="flex items-center gap-3">
-          <img
-            src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80"
-            alt="Yirgacheffe Union"
-            className="h-12 w-12 rounded-full object-cover border-2 border-[#107C41]"
-          />
-          <div>
-            <h4 className="font-extrabold text-sm text-[#343E4F]">
-              {product.farmer || "Yirgacheffe Union"}
-            </h4>
-            <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
-              <span className="text-[#107C41] font-bold">Premier Seller</span>
-              <span>•</span>
-              <span>84x Sales</span>
-            </div>
-          </div>
-        </div>
-
-        <button className="px-4 py-2 rounded-xl bg-slate-100 text-[#343E4F] hover:bg-slate-200 text-xs font-bold transition">
-          Contact
-        </button>
-      </div>
-
-      {/* Specs Grid */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="p-3.5 rounded-2xl bg-slate-100/80 border border-slate-200/60">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-            ROAST LEVEL
-          </span>
-          <span className="text-sm font-extrabold text-[#343E4F] mt-0.5 block">
-            {product.roastLevel || "Medium-Dark"}
-          </span>
-        </div>
-
-        <div className="p-3.5 rounded-2xl bg-slate-100/80 border border-slate-200/60">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-            QUALITY GRADE
-          </span>
-          <span className="text-sm font-extrabold text-[#343E4F] mt-0.5 block">
-            {product.qualityGrade || "G1 Organic"}
-          </span>
-        </div>
-
-        <div className="p-3.5 rounded-2xl bg-slate-100/80 border border-slate-200/60">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-            PROCESSING
-          </span>
-          <span className="text-sm font-extrabold text-[#343E4F] mt-0.5 block">
-            {product.processing || "Washed"}
-          </span>
-        </div>
-
-        <div className="p-3.5 rounded-2xl bg-slate-100/80 border border-slate-200/60">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-            ALTITUDE
-          </span>
-          <span className="text-sm font-extrabold text-[#343E4F] mt-0.5 block">
-            {product.altitude || "1,900 - 2,200m"}
-          </span>
-        </div>
-      </div>
-
-      {/* Description Section */}
-      <div className="space-y-2 pt-2 border-t border-slate-200">
-        <h3 className="text-base font-extrabold text-[#343E4F]">Description</h3>
-        <p className="text-xs sm:text-sm leading-relaxed text-slate-600 font-normal">
-          {product.description}
-        </p>
-      </div>
-
-      {/* Customer Reviews Section */}
-      <div className="space-y-4 pt-4 border-t border-slate-200">
-        <div className="flex items-center justify-between">
-          <h3 className="text-base font-extrabold text-[#343E4F]">Customer Reviews</h3>
-          <a href="#reviews" className="text-xs font-bold text-[#107C41] hover:underline flex items-center gap-1">
-            <span>View All Reviews</span>
-            <ArrowRight size={12} />
-          </a>
-        </div>
-
-        <div className="space-y-3">
-          {/* Review 1 */}
-          <div className="p-4 rounded-2xl bg-white border border-slate-200 space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-[#107C41] font-bold text-xs">
-                  MS
-                </div>
-                <div>
-                  <span className="font-bold text-xs text-[#343E4F] block">Mohammed S.</span>
-                  <span className="text-[10px] text-slate-400">Verified Buyer</span>
-                </div>
-              </div>
-              <div className="flex text-amber-400">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={12} className="fill-amber-400" />
-                ))}
-              </div>
-            </div>
-            <p className="text-xs italic text-slate-600 leading-relaxed">
-              "The quality is exceptional. You can truly taste the high-altitude characteristics. Delivery was faster than expected via D-Agro logistics."
-            </p>
-          </div>
-
-          {/* Review 2 */}
-          <div className="p-4 rounded-2xl bg-white border border-slate-200 space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#107C41] text-white font-bold text-xs">
-                  HL
-                </div>
-                <div>
-                  <span className="font-bold text-xs text-[#343E4F] block">Hanna L.</span>
-                  <span className="text-[10px] text-slate-400">Wholesale Partner</span>
-                </div>
-              </div>
-              <div className="flex text-amber-400">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={12} className="fill-amber-400" />
-                ))}
-              </div>
-            </div>
-            <p className="text-xs italic text-slate-600 leading-relaxed">
-              "Consistently good beans. We use these for our boutique cafe in Addis and our customers love the profile. The AI grading reports are very helpful for our QA."
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Sticky Action Bar at Bottom */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 p-3 sm:px-8 shadow-2xl">
-        <div className="mx-auto max-w-4xl flex items-center gap-3">
-          <button
-            onClick={() => addToCart(product, 1)}
-            className="flex-1 py-3.5 rounded-2xl border-2 border-[#107C41] text-[#107C41] hover:bg-emerald-50 font-bold text-xs sm:text-sm transition flex items-center justify-center gap-2 cursor-pointer"
+          <Link
+            to="/buyer/marketplace"
+            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-[#E57036] px-5 py-3 font-semibold text-white"
           >
-            <ShoppingCart size={16} />
-            <span>Add to Cart</span>
-          </button>
-
-          <button
-            onClick={handleBuyNow}
-            className="flex-1 py-3.5 rounded-2xl bg-[#0B6132] hover:bg-[#084825] text-white font-extrabold text-xs sm:text-sm transition shadow-md shadow-[#0B6132]/20 cursor-pointer"
-          >
-            Buy Now
-          </button>
+            <ArrowLeft size={18} />
+            Back to Marketplace
+          </Link>
         </div>
       </div>
+    );
+  }
 
+  const stock = Number(product.stock || 0);
+
+  const totalPrice =
+    Number(product.price || 0) * quantity;
+
+  return (
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
+
+      {/* ==========================================
+          BACK
+      ========================================== */}
+      <div className="mx-auto mb-6 max-w-6xl">
+        <Link
+          to="/buyer/marketplace"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-[#343E4F] transition hover:text-[#E57036]"
+        >
+          <ArrowLeft size={18} />
+          Back to Marketplace
+        </Link>
+      </div>
+
+      {/* ==========================================
+          PRODUCT
+      ========================================== */}
+      <div className="mx-auto max-w-6xl overflow-hidden rounded-2xl bg-white shadow-sm">
+
+        <div className="grid lg:grid-cols-2">
+
+          {/* ========================================
+              IMAGE
+          ======================================== */}
+          <div className="flex min-h-[350px] items-center justify-center bg-gray-100 p-5 sm:min-h-[500px]">
+
+            <img
+              src={
+                product.image ||
+                "/images/product-placeholder.jpg"
+              }
+              alt={product.name}
+              className="h-full max-h-[500px] w-full rounded-xl object-contain"
+              onError={(e) => {
+                e.currentTarget.src =
+                  "/images/product-placeholder.jpg";
+              }}
+            />
+          </div>
+
+          {/* ========================================
+              INFORMATION
+          ======================================== */}
+          <div className="flex flex-col p-6 sm:p-8 lg:p-10">
+
+            {/* Category */}
+            <span className="mb-4 w-fit rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold text-[#E57036]">
+              {product.category || "Agricultural Product"}
+            </span>
+
+            {/* Name */}
+            <h1 className="text-3xl font-bold text-[#343E4F] sm:text-4xl">
+              {product.name}
+            </h1>
+
+            {/* Seller */}
+            <p className="mt-3 text-sm text-gray-500">
+              Sold by{" "}
+              <span className="font-semibold text-[#343E4F]">
+                {product.seller || "Farmer"}
+              </span>
+            </p>
+
+            {/* Location */}
+            {product.location && (
+              <div className="mt-4 flex items-center gap-2 text-sm text-gray-500">
+                <MapPin
+                  size={18}
+                  className="text-[#E57036]"
+                />
+
+                {product.location}
+              </div>
+            )}
+
+            {/* Divider */}
+            <div className="my-6 border-t border-gray-100" />
+
+            {/* Price */}
+            <div>
+              <p className="text-3xl font-bold text-[#E57036]">
+                ETB{" "}
+                {Number(
+                  product.price || 0
+                ).toLocaleString()}
+              </p>
+
+              <p className="mt-1 text-sm text-gray-400">
+                per {product.unit || "kg"}
+              </p>
+            </div>
+
+            {/* Description */}
+            <div className="mt-7">
+              <h2 className="font-bold text-[#343E4F]">
+                Product Description
+              </h2>
+
+              <p className="mt-2 text-sm leading-6 text-gray-600">
+                {product.description ||
+                  "No description has been provided for this product."}
+              </p>
+            </div>
+
+            {/* Stock */}
+            <div className="mt-6 flex items-center gap-2">
+              <Package
+                size={18}
+                className={
+                  stock > 0
+                    ? "text-green-600"
+                    : "text-red-500"
+                }
+              />
+
+              <span
+                className={`text-sm font-semibold ${
+                  stock > 0
+                    ? "text-green-600"
+                    : "text-red-500"
+                }`}
+              >
+                {stock > 0
+                  ? `${stock} ${product.unit || "units"} available`
+                  : "Out of stock"}
+              </span>
+            </div>
+
+            {/* Quantity */}
+            {stock > 0 && (
+              <div className="mt-7">
+
+                <label className="mb-2 block text-sm font-semibold text-[#343E4F]">
+                  Quantity
+                </label>
+
+                <div className="flex w-fit items-center rounded-xl border border-gray-200">
+
+                  <button
+                    type="button"
+                    onClick={decreaseQuantity}
+                    disabled={quantity <= 1}
+                    className="p-3 text-gray-500 transition hover:text-[#E57036] disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    <Minus size={18} />
+                  </button>
+
+                  <span className="min-w-12 text-center font-semibold text-[#343E4F]">
+                    {quantity}
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={increaseQuantity}
+                    disabled={quantity >= stock}
+                    className="p-3 text-gray-500 transition hover:text-[#E57036] disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    <Plus size={18} />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Total */}
+            {stock > 0 && (
+              <div className="mt-6 flex items-center justify-between rounded-xl bg-gray-50 p-4">
+                <span className="text-sm text-gray-500">
+                  Total
+                </span>
+
+                <span className="text-xl font-bold text-[#343E4F]">
+                  ETB {totalPrice.toLocaleString()}
+                </span>
+              </div>
+            )}
+
+            {/* Add Cart */}
+            <button
+              type="button"
+              onClick={addToCart}
+              disabled={stock <= 0}
+              className="mt-6 flex items-center justify-center gap-2 rounded-xl bg-[#E57036] px-5 py-4 font-bold text-white transition hover:bg-[#cf5f2b] disabled:cursor-not-allowed disabled:bg-gray-300"
+            >
+              <ShoppingCart size={20} />
+
+              {stock <= 0
+                ? "Out of Stock"
+                : "Add to Cart"}
+            </button>
+
+            {/* Success */}
+            {added && (
+              <div className="mt-4 flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 p-4 text-sm font-medium text-green-700">
+                <CheckCircle size={19} />
+                Product added to your cart.
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
-
-export default ProductDetailPage;

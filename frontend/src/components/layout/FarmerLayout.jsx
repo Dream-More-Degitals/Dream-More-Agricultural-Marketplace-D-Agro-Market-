@@ -1,128 +1,227 @@
-import { Outlet, Link, useLocation } from 'react-router-dom';
-import { 
-  LayoutDashboard, ShoppingBag, Sparkles, ClipboardList, 
-  Settings, Bell, LogOut 
-} from 'lucide-react';
+import { useState } from "react";
+import { Bot, Sparkles } from "lucide-react";
+import {
+  LayoutDashboard,
+  Package,
+  ShoppingBag,
+  UserCircle,
+  LogOut,
+  Menu,
+  X,
+  Store,
+} from "lucide-react";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import RoleSwitcher from "../common/RoleSwitcher";
 
 export default function FarmerLayout() {
-  const location = useLocation();
-  const isActive = (path) => location.pathname === path;
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+
+    navigate("/");
+  };
+
+  const navItems = [
+    {
+      name: "Dashboard",
+      path: "/farmer/dashboard",
+      icon: LayoutDashboard,
+    },
+    {
+      name: "My Products",
+      path: "/farmer/products",
+      icon: Package,
+    },
+    {
+      name: "Orders",
+      path: "/farmer/orders",
+      icon: ShoppingBag,
+    },
+    {
+      name: "Profile",
+      path: "/farmer/profile",
+      icon: UserCircle,
+    },
+     {
+    name: "AI Advisor",
+    path: "/ai",
+    icon:  Bot,
+  },
+  ];
+
+  const NavItem = ({ item }) => {
+    const Icon = item.icon;
+
+    return (
+      <NavLink
+        to={item.path}
+        onClick={() => setSidebarOpen(false)}
+        className={({ isActive }) =>
+          `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition ${
+            isActive
+              ? "bg-[#E57036] text-white shadow-sm"
+              : "text-white/70 hover:bg-white/10 hover:text-white"
+          }`
+        }
+      >
+        <Icon size={20} />
+        <span>{item.name}</span>
+      </NavLink>
+    );
+  };
 
   return (
-    <div className="flex h-screen bg-gray-50 font-sans text-gray-900 overflow-hidden">
-      {/* Sidebar (Your exact original layout structure) */}
-      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col justify-between shrink-0">
-        <div>
-          <div className="h-16 flex items-center px-6 border-b border-gray-200 font-bold text-lg text-gray-900">
-            D-Agro Market AI
-          </div>
-          <div className="p-4">
-            <div className="flex items-center gap-3 p-3 mb-6 rounded-xl bg-gray-50 border border-gray-100">
-              <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center text-sm shrink-0">
-                AB
-              </div>
-              <div className="overflow-hidden">
-                <p className="text-sm font-bold truncate">Abebe Bikila</p>
-                <p className="text-xs text-gray-500 truncate">Verified Farmer • Oromia</p>
-              </div>
-            </div>
-            
-            <nav className="space-y-1">
-              <Link 
-                to="/farmer/dashboard" 
-                className={`flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${
-                  isActive('/farmer/dashboard') 
-                    ? 'bg-orange-500 text-white shadow-sm shadow-orange-200 font-semibold' 
-                    : 'text-gray-600 hover:bg-gray-50'
-                }`}
-              >
-                <LayoutDashboard size={18} /> Dashboard
-              </Link>
+    <div className="min-h-screen bg-gray-50">
 
-              <Link 
-                to="/farmer/marketplace" 
-                className={`flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${
-                  isActive('/farmer/marketplace') 
-                    ? 'bg-orange-500 text-white shadow-sm shadow-orange-200 font-semibold' 
-                    : 'text-gray-600 hover:bg-gray-50'
-                }`}
-              >
-                <ShoppingBag size={18} /> Marketplace
-              </Link>
+      {/* =====================================
+          MOBILE HEADER
+      ===================================== */}
+      <header className="fixed left-0 right-0 top-0 z-40 flex h-16 items-center justify-between bg-[#343E4F] px-4 shadow-md lg:hidden">
 
-              <Link 
-    to="/ai/crop-recommendation" 
-    className={`flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${
-      isActive('/ai/crop-recommendation') 
-        ? 'bg-orange-500 text-white shadow-sm shadow-orange-200 font-semibold' 
-        : 'text-gray-600 hover:bg-gray-50'
-    }`}
-  >
-    <Sparkles size={18} /> AI Services
-  </Link>
+        <div className="flex items-center gap-2">
+          <Store size={25} className="text-[#E57036]" />
 
-              <Link 
-                to="/farmer/orders" 
-                className={`flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${
-                  isActive('/farmer/orders') 
-                    ? 'bg-orange-500 text-white shadow-sm shadow-orange-200 font-semibold' 
-                    : 'text-gray-600 hover:bg-gray-50'
-                }`}
-              >
-                <ClipboardList size={18} /> Orders
-              </Link>
-
-              <Link 
-                to="/farmer/profile" 
-                className={`flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${
-                  isActive('/farmer/profile') || isActive('/farmer/settings')
-                    ? 'bg-orange-500 text-white shadow-sm shadow-orange-200 font-semibold' 
-                    : 'text-gray-600 hover:bg-gray-50'
-                }`}
-              >
-                <Settings size={18} /> Settings & Profile
-              </Link>
-            </nav>
-          </div>
+          <span className="font-bold text-white">
+            D-Agro
+          </span>
         </div>
 
-        <div className="p-4 border-t border-gray-200">
-          <Link 
-            to="/" 
-            className="flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg text-red-600 hover:bg-red-50 transition-colors"
+        <button
+          onClick={() => setSidebarOpen(true)}
+          className="rounded-lg p-2 text-white transition hover:bg-white/10"
+          aria-label="Open menu"
+        >
+          <Menu size={25} />
+        </button>
+      </header>
+
+      {/* =====================================
+          MOBILE OVERLAY
+      ===================================== */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* =====================================
+          SIDEBAR
+      ===================================== */}
+      <aside
+        className={`fixed left-0 top-0 z-50 flex h-screen w-72 flex-col bg-[#343E4F] transition-transform duration-300 lg:translate-x-0 ${
+          sidebarOpen
+            ? "translate-x-0"
+            : "-translate-x-full"
+        }`}
+      >
+
+        {/* Logo */}
+        <div className="flex h-20 items-center justify-between border-b border-white/10 px-6">
+
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#E57036]">
+              <Store
+                size={23}
+                className="text-white"
+              />
+            </div>
+
+            <div>
+              <h1 className="font-bold text-white">
+                D-Agro
+              </h1>
+
+              <p className="text-xs text-white/50">
+                Farmer Portal
+              </p>
+            </div>
+          </div>
+
+          {/* Close mobile sidebar */}
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="rounded-lg p-2 text-white/70 hover:bg-white/10 hover:text-white lg:hidden"
           >
-            <LogOut size={18} /> Exit to Home
-          </Link>
+            <X size={22} />
+          </button>
+        </div>
+
+        {/* =====================================
+            NAVIGATION
+        ===================================== */}
+        <nav className="flex-1 space-y-2 overflow-y-auto p-4">
+
+          <p className="mb-3 px-4 text-xs font-semibold uppercase tracking-wider text-white/40">
+            Main Menu
+          </p>
+
+          {navItems.map((item) => (
+            <NavItem
+              key={item.path}
+              item={item}
+            />
+          ))}
+        </nav>
+
+          {/* =================================================
+            ROLE SWITCHER
+        ================================================== */}
+        <div className="px-3 pb-3">
+
+          <RoleSwitcher currentRole="buyer" />
+
+        </div>
+
+        {/* =====================================
+            BOTTOM SECTION
+        ===================================== */}
+        <div className="border-t border-white/10 p-4">
+
+          {/* Farmer role */}
+          <div className="mb-3 flex items-center gap-3 rounded-xl bg-white/5 p-3">
+
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#E57036]">
+              <UserCircle
+                size={22}
+                className="text-white"
+              />
+            </div>
+
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-white">
+                Farmer
+              </p>
+
+              <p className="text-xs text-white/50">
+                Agricultural Seller
+              </p>
+            </div>
+          </div>
+
+          {/* Logout */}
+          <button
+            onClick={handleLogout}
+            className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-white/70 transition hover:bg-red-500/10 hover:text-red-400"
+          >
+            <LogOut size={20} />
+            <span>Logout</span>
+          </button>
         </div>
       </aside>
 
-      {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto flex flex-col justify-between">
-        <div>
-          {/* Top Navbar */}
-          <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8">
-            <div className="flex items-center gap-2 text-xs font-semibold text-gray-500">
-              <span className="hover:text-gray-900 cursor-pointer">Farmer Portal</span>
-              <span>/</span>
-              <span className="text-gray-900 capitalize">{location.pathname.split('/').pop()?.replace('-', ' ')}</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <button className="relative text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100">
-                <Bell size={20} />
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-orange-500 rounded-full"></span>
-              </button>
-              <div className="w-8 h-8 bg-slate-800 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                AB
-              </div>
-            </div>
-          </header>
+      {/* =====================================
+          MAIN CONTENT
+      ===================================== */}
+      <main className="min-h-screen lg:ml-72">
 
-          {/* Child Component Rendering */}
-          <div className="p-8 max-w-7xl mx-auto">
-            <Outlet />
-          </div>
-        </div>
+        {/* Space for mobile header */}
+        <div className="h-16 lg:hidden" />
 
+        <Outlet />
       </main>
     </div>
   );

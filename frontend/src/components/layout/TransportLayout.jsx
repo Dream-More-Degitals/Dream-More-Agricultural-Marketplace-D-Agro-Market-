@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   Truck,
   UserCircle,
+  Bot,
   LogOut,
   Menu,
   X,
@@ -31,6 +32,11 @@ function TransportLayout() {
       path: "/transport/profile",
       icon: UserCircle,
     },
+    {
+    name: "AI Advisor",
+    path: "/ai/advisor",
+    icon: Bot,
+  },
   ];
 
   const isActive = (path) => location.pathname === path;

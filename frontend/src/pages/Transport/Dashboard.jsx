@@ -1,173 +1,225 @@
+import { Link } from "react-router-dom";
 import {
   Truck,
+  Package,
   Clock,
   CheckCircle,
   MapPin,
-  DollarSign,
-  Package,
   ArrowRight,
+  Navigation,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+
+const deliveries = [
+  {
+    id: "DEL-1001",
+    orderId: "ORD-1001",
+    customer: "Abebe Kebede",
+    pickup: "Jimma, Oromia",
+    destination: "Bedele, Oromia",
+    status: "Ready for Pickup",
+  },
+  {
+    id: "DEL-1002",
+    orderId: "ORD-1002",
+    customer: "Hanna Ali",
+    pickup: "Addis Ababa",
+    destination: "Adama, Oromia",
+    status: "In Transit",
+  },
+  {
+    id: "DEL-1003",
+    orderId: "ORD-1003",
+    customer: "Mohammed Ahmed",
+    pickup: "Nekemte, Oromia",
+    destination: "Jimma, Oromia",
+    status: "Delivered",
+  },
+];
 
 function Dashboard() {
-  const deliveries = [
-    {
-      id: "#DEL-001",
-      product: "Premium Teff",
-      from: "Jimma",
-      to: "Addis Ababa",
-      status: "In Transit",
-      amount: "2,500 ETB",
-    },
-    {
-      id: "#DEL-002",
-      product: "Coffee Beans",
-      from: "Jimma",
-      to: "Bahir Dar",
-      status: "Pending",
-      amount: "3,200 ETB",
-    },
-    {
-      id: "#DEL-003",
-      product: "Maize",
-      from: "Nekemte",
-      to: "Addis Ababa",
-      status: "Delivered",
-      amount: "1,800 ETB",
-    },
-  ];
+  const readyCount = deliveries.filter(
+    (delivery) => delivery.status === "Ready for Pickup"
+  ).length;
+
+  const transitCount = deliveries.filter(
+    (delivery) => delivery.status === "In Transit"
+  ).length;
+
+  const deliveredCount = deliveries.filter(
+    (delivery) => delivery.status === "Delivered"
+  ).length;
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-6 lg:p-8">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-[#343E4F] sm:text-3xl">
+          Transporter Dashboard
+        </h1>
 
-      {/* HEADER */}
-
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-
-        <div>
-          <p className="text-sm text-gray-500">
-            Welcome back
-          </p>
-
-          <h1 className="text-2xl font-bold text-[#343E4F] sm:text-3xl">
-            Transporter Dashboard
-          </h1>
-
-          <p className="mt-2 text-sm text-gray-500">
-            Manage your agricultural deliveries and transportation.
-          </p>
-        </div>
-
-        <Link
-          to="/transport/deliveries"
-          className="flex items-center justify-center gap-2 rounded-lg bg-[#E57036] px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90"
-        >
-          <Truck size={18} />
-          View Deliveries
-        </Link>
-
+        <p className="mt-1 text-sm text-gray-500">
+          Manage your deliveries and track transportation
+          activities.
+        </p>
       </div>
 
-
-      {/* STATISTICS */}
-
-      <div className="mb-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-
-        <StatCard
-          title="Total Deliveries"
-          value="48"
-          icon={Truck}
-        />
-
-        <StatCard
-          title="Pending"
-          value="6"
-          icon={Clock}
-        />
-
-        <StatCard
-          title="In Transit"
-          value="4"
-          icon={MapPin}
-        />
-
-        <StatCard
-          title="Completed"
-          value="38"
-          icon={CheckCircle}
-        />
-
-      </div>
-
-
-      {/* SECOND STATISTICS */}
-
-      <div className="mb-8 grid gap-5 md:grid-cols-2">
-
-        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-
-          <div className="flex items-center gap-3">
-
-            <div className="rounded-lg bg-orange-50 p-3 text-[#E57036]">
-              <DollarSign size={22} />
+      {/* Statistics */}
+      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Total Deliveries */}
+        <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+          <div className="flex items-center gap-4">
+            <div className="rounded-xl bg-blue-50 p-3">
+              <Truck
+                size={24}
+                className="text-blue-600"
+              />
             </div>
 
             <div>
               <p className="text-sm text-gray-500">
-                Total Earnings
+                Total Deliveries
               </p>
 
-              <h2 className="text-2xl font-bold text-[#343E4F]">
-                85,500 ETB
-              </h2>
+              <p className="text-2xl font-bold text-[#343E4F]">
+                {deliveries.length}
+              </p>
             </div>
-
           </div>
-
-          <p className="mt-4 text-xs text-green-600">
-            +12.5% from last month
-          </p>
-
         </div>
 
-
-        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-
-          <div className="flex items-center gap-3">
-
-            <div className="rounded-lg bg-orange-50 p-3 text-[#E57036]">
-              <Package size={22} />
+        {/* Ready */}
+        <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+          <div className="flex items-center gap-4">
+            <div className="rounded-xl bg-orange-50 p-3">
+              <Package
+                size={24}
+                className="text-orange-600"
+              />
             </div>
 
             <div>
               <p className="text-sm text-gray-500">
-                Packages Delivered
+                Ready for Pickup
               </p>
 
-              <h2 className="text-2xl font-bold text-[#343E4F]">
-                126
-              </h2>
+              <p className="text-2xl font-bold text-[#343E4F]">
+                {readyCount}
+              </p>
             </div>
-
           </div>
-
-          <p className="mt-4 text-xs text-gray-500">
-            Successfully delivered packages
-          </p>
-
         </div>
 
+        {/* In Transit */}
+        <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+          <div className="flex items-center gap-4">
+            <div className="rounded-xl bg-purple-50 p-3">
+              <Clock
+                size={24}
+                className="text-purple-600"
+              />
+            </div>
+
+            <div>
+              <p className="text-sm text-gray-500">
+                In Transit
+              </p>
+
+              <p className="text-2xl font-bold text-[#343E4F]">
+                {transitCount}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Delivered */}
+        <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+          <div className="flex items-center gap-4">
+            <div className="rounded-xl bg-green-50 p-3">
+              <CheckCircle
+                size={24}
+                className="text-green-600"
+              />
+            </div>
+
+            <div>
+              <p className="text-sm text-gray-500">
+                Delivered
+              </p>
+
+              <p className="text-2xl font-bold text-[#343E4F]">
+                {deliveredCount}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
+      {/* Quick Actions */}
+      <div className="mb-8">
+        <h2 className="mb-4 text-lg font-bold text-[#343E4F]">
+          Quick Actions
+        </h2>
 
-      {/* RECENT DELIVERIES */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <Link
+            to="/transport/deliveries"
+            className="group rounded-2xl bg-[#343E4F] p-6 text-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="mb-3 inline-flex rounded-xl bg-white/10 p-3">
+                  <Truck size={24} />
+                </div>
 
-      <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
+                <h3 className="font-semibold">
+                  Manage Deliveries
+                </h3>
 
-        <div className="flex flex-col gap-3 border-b border-gray-100 p-6 sm:flex-row sm:items-center sm:justify-between">
+                <p className="mt-1 text-sm text-white/60">
+                  View and update delivery requests.
+                </p>
+              </div>
 
+              <ArrowRight
+                size={22}
+                className="transition group-hover:translate-x-1"
+              />
+            </div>
+          </Link>
+
+          <Link
+            to="/transport/profile"
+            className="group rounded-2xl bg-[#E57036] p-6 text-white shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="mb-3 inline-flex rounded-xl bg-white/10 p-3">
+                  <Navigation size={24} />
+                </div>
+
+                <h3 className="font-semibold">
+                  Transporter Profile
+                </h3>
+
+                <p className="mt-1 text-sm text-white/70">
+                  Manage your transportation information.
+                </p>
+              </div>
+
+              <ArrowRight
+                size={22}
+                className="transition group-hover:translate-x-1"
+              />
+            </div>
+          </Link>
+        </div>
+      </div>
+
+      {/* Recent Deliveries */}
+      <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+        <div className="flex items-center justify-between border-b border-gray-100 p-6">
           <div>
-            <h2 className="text-lg font-bold text-[#343E4F]">
+            <h2 className="font-bold text-[#343E4F]">
               Recent Deliveries
             </h2>
 
@@ -178,127 +230,86 @@ function Dashboard() {
 
           <Link
             to="/transport/deliveries"
-            className="flex items-center gap-1 text-sm font-semibold text-[#E57036]"
+            className="text-sm font-semibold text-[#E57036] hover:underline"
           >
             View All
-            <ArrowRight size={16} />
           </Link>
-
         </div>
 
+        <div className="divide-y divide-gray-100">
+          {deliveries.map((delivery) => (
+            <div
+              key={delivery.id}
+              className="flex flex-col gap-4 p-6 lg:flex-row lg:items-center lg:justify-between"
+            >
+              {/* Delivery Info */}
+              <div className="flex items-start gap-4">
+                <div className="rounded-xl bg-gray-100 p-3">
+                  <Truck
+                    size={22}
+                    className="text-[#343E4F]"
+                  />
+                </div>
 
-        <div className="overflow-x-auto">
-
-          <table className="w-full min-w-[700px]">
-
-            <thead className="bg-[#F8F9FA]">
-
-              <tr className="text-left text-xs uppercase tracking-wide text-gray-500">
-
-                <th className="px-6 py-4">
-                  Delivery
-                </th>
-
-                <th className="px-6 py-4">
-                  Product
-                </th>
-
-                <th className="px-6 py-4">
-                  Route
-                </th>
-
-                <th className="px-6 py-4">
-                  Status
-                </th>
-
-                <th className="px-6 py-4">
-                  Earnings
-                </th>
-
-              </tr>
-
-            </thead>
-
-            <tbody>
-
-              {deliveries.map((delivery) => (
-
-                <tr
-                  key={delivery.id}
-                  className="border-t border-gray-100"
-                >
-
-                  <td className="px-6 py-4 text-sm font-semibold text-[#343E4F]">
-                    {delivery.id}
-                  </td>
-
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {delivery.product}
-                  </td>
-
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {delivery.from} → {delivery.to}
-                  </td>
-
-                  <td className="px-6 py-4">
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h3 className="font-semibold text-[#343E4F]">
+                      {delivery.id}
+                    </h3>
 
                     <span
-                      className={`rounded-full px-3 py-1 text-xs font-medium ${
-                        delivery.status === "Delivered"
-                          ? "bg-green-50 text-green-600"
-                          : delivery.status === "In Transit"
-                          ? "bg-blue-50 text-blue-600"
-                          : "bg-orange-50 text-[#E57036]"
+                      className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                        delivery.status ===
+                        "Delivered"
+                          ? "bg-green-100 text-green-700"
+                          : delivery.status ===
+                            "In Transit"
+                          ? "bg-purple-100 text-purple-700"
+                          : "bg-orange-100 text-orange-700"
                       }`}
                     >
                       {delivery.status}
                     </span>
+                  </div>
 
-                  </td>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Order: {delivery.orderId}
+                  </p>
 
-                  <td className="px-6 py-4 text-sm font-semibold text-[#343E4F]">
-                    {delivery.amount}
-                  </td>
+                  <p className="mt-1 text-sm font-medium text-gray-700">
+                    {delivery.customer}
+                  </p>
+                </div>
+              </div>
 
-                </tr>
+              {/* Route */}
+              <div className="flex flex-col gap-2 text-sm lg:min-w-[320px]">
+                <div className="flex items-center gap-2 text-gray-600">
+                  <MapPin
+                    size={17}
+                    className="text-[#E57036]"
+                  />
 
-              ))}
+                  <span>{delivery.pickup}</span>
+                </div>
 
-            </tbody>
+                <div className="ml-2 border-l border-dashed border-gray-300 pl-4 text-xs text-gray-400">
+                  Delivery route
+                </div>
 
-          </table>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <MapPin
+                    size={17}
+                    className="text-green-600"
+                  />
 
+                  <span>{delivery.destination}</span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
-
       </div>
-
-    </div>
-  );
-}
-
-
-function StatCard({ title, value, icon: Icon }) {
-  return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-
-      <div className="flex items-center justify-between">
-
-        <div>
-          <p className="text-sm text-gray-500">
-            {title}
-          </p>
-
-          <h2 className="mt-2 text-2xl font-bold text-[#343E4F]">
-            {value}
-          </h2>
-        </div>
-
-        <div className="rounded-lg bg-orange-50 p-3 text-[#E57036]">
-          <Icon size={22} />
-        </div>
-
-      </div>
-
     </div>
   );
 }
