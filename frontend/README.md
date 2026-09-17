@@ -1,72 +1,99 @@
-# Dream More Agricultural Marketplace with AI (D-Agro Market AI)
+# D-Agro Market AI — Frontend
 
-D-Agro Market AI is a web-based agricultural marketplace built to connect Ethiopian farmers, buyers, suppliers, and transport providers through a single digital platform — powered by AI-driven insights and integrated with local digital payment systems.
+This is the frontend for **Dream More Agricultural Marketplace with AI (D-Agro Market AI)**, a platform connecting Ethiopian farmers, buyers, suppliers, and transport providers — enhanced with AI-powered agricultural tools.
 
-Agriculture is the backbone of Ethiopia's economy, yet farmers still face unfair pricing, limited market access, delayed payments, and heavy reliance on intermediaries. D-Agro Market AI addresses this gap by combining an online marketplace with AI services, logistics coordination, and secure digital payments (Telebirr, CBE Birr).
-
-## Key Features
-
-**Farmer Management**
-- Registration, login, and profile management
-- Product listing, editing, and sales history
-
-**Buyer Management**
-- Product search & filtering, online purchasing
-- Order history and delivery tracking
-
-**AI-Powered Tools**
-- Crop Disease Detection — upload crop images, get AI diagnosis + treatment suggestions
-- Crop Recommendation — suggests suitable crops based on soil, rainfall, region & season
-- Market Price Prediction — forecasts crop prices from historical data
-- Multilingual AI Chatbot — agricultural advice in English, Amharic, and Afaan Oromo
-
-**Order & Delivery Management**
-- Order placement, confirmation, delivery assignment, and real-time tracking
-
-**Digital Payments**
-- Secure integration with Telebirr, CBE Birr, and other banking services
-
-**Reporting & Administration**
-- Admin dashboard with analytics on sales, users, revenue, and AI usage
+Built with **React + Vite** and styled using **Tailwind CSS**.
 
 ## Tech Stack
 
-| Layer | Technology |
+| Tool | Purpose |
 |---|---|
-| Frontend | React.js + Tailwind CSS |
-| Backend | Node.js, Express.js |
-| AI Services | Python, TensorFlow, OpenCV, Scikit-learn |
-| Database | MySQL |
-| API | RESTful API |
-| Version Control | Git & GitHub |
+| React.js | UI library |
+| Vite | Build tool & dev server |
+| Tailwind CSS | Styling |
+| React Router | Client-side routing |
+
+
+## Getting Started
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the development server:
+
+```bash
+npm run dev
+```
+
+The app will be available at `http://localhost:5173`.
+
+Build for production:
+
+```bash
+npm run build
+```
+
+Preview the production build locally:
+
+```bash
+npm run preview
+```
 
 ## Project Structure
 
 ```
-Dream-More-Agricultural-Marketplace-D-Agro-Market-/
-├── backend/     # Node.js/Express API, business logic, database layer
-└── frontend/    # React + Tailwind Vite app (farmer, buyer, supplier, admin portals)
+frontend/
+├── public/                # Static assets
+├── src/
+│   ├── assets/             # Images and media
+│   ├── components/         # Reusable UI components (incl. AI chatbot, prediction cards)
+│   ├── context/             # React context providers
+│   ├── pages/
+│   │   ├── Landing/          # Home page
+│   │   ├── About/
+│   │   ├── Contact/
+│   │   ├── Auth/             # Login & registration
+│   │   ├── AI/               # AI Advisor tools (chatbot, crop recommendation)
+│   │   ├── Farmer/           # Farmer portal pages
+│   │   ├── Buyer/            # Buyer dashboard, marketplace, cart, orders
+│   │   ├── Supplier/         # Supplier portal pages
+│   │   ├── Transport/        # Transport provider pages
+│   │   └── Admin/            # Admin dashboard, order tracking, profile, notifications
+│   ├── routes/               # App route definitions
+│   ├── services/             # API calls to the backend
+│   ├── styles/               # Global styles
+│   ├── utils/                 # Helper functions
+│   ├── App.jsx
+│   └── main.jsx
+├── index.html
+├── vite.config.js
+└── package.json
 ```
 
-## Getting Started (Frontend)
+## Key Pages & Features
 
-```bash
-cd frontend
-npm install
-npm run dev
+- **Landing / Home** — product introduction and entry points for farmers and buyers
+- **AI Advisor** — chat-based agricultural assistant for crops, diseases, soil, and markets
+- **Buyer Portal** — marketplace browsing, cart, checkout, and order tracking
+- **Farmer Portal** — product listing and sales management
+- **Supplier & Transport Portals** — inventory and logistics coordination
+- **Admin Dashboard** — user, order, and platform management (in progress)
+- **Auth** — registration with role selection (Farmer / Buyer / Supplier / Transport)
+
+## Environment Variables
+
+If the app needs to call the backend API, create a `.env` file in this folder:
+
+```
+VITE_API_URL=http://localhost:PORT
 ```
 
-The app runs locally at `http://localhost:5173`.
+## Deployment
 
-## User Roles
+This app is a static Vite build and can be deployed to any static hosting provider (e.g. Vercel, Netlify) with:
 
-- **Farmer** — lists products, manages orders, gets AI crop guidance
-- **Buyer** — browses marketplace, places orders, tracks deliveries
-- **Supplier** — manages bulk inventory and sourcing
-- **Transport Provider** — coordinates deliveries and logistics
-- **Administrator** — oversees users, products, orders, and reports
-
-
-## License
-
-This project is developed for academic purposes as part of an internship program.
+- **Build command:** `npm run build`
+- **Output directory:** `dist`
