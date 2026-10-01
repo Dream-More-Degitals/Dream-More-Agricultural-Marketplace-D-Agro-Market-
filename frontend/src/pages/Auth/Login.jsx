@@ -1,40 +1,44 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { LogIn } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
 function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setLoading(true);
 
-    const savedUser = JSON.parse(localStorage.getItem("user"));
+    try {
+      const loggedUser = await login({ email, password });
 
-    if (!savedUser) {
-      alert("No account found. Please register first.");
-      return;
-    }
-
-    if (
-      email !== savedUser.email ||
-      password !== savedUser.password
-    ) {
-      alert("Incorrect email or password.");
-      return;
-    }
-
-    // Save login status
-    localStorage.setItem("isLoggedIn", "true");
-
-    // If user has only one role, go directly to that dashboard
-    if (savedUser.roles.length === 1) {
-      navigate(`/${savedUser.roles[0]}/dashboard`);
-    } else {
-      // Multiple roles
-      navigate("/select-role");
+      const userRoles = loggedUser.roles || [];
+      if (userRoles.length === 1) {
+        const role = userRoles[0];
+        const dashboardPaths = {
+          farmer: "/farmer/dashboard",
+          buyer: "/buyer/dashboard",
+          supplier: "/supplier/dashboard",
+          transporter: "/transport/dashboard",
+          transport: "/transport/dashboard",
+          admin: "/admin/dashboard",
+        };
+        navigate(dashboardPaths[role] || "/select-role");
+      } else {
+        navigate("/select-role");
+      }
+    } catch (err) {
+      setError(err.message || "Incorrect email or password.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -56,6 +60,12 @@ function Login() {
             Sign in to your D-Agro account
           </p>
         </div>
+
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
 
@@ -104,9 +114,10 @@ function Login() {
           {/* Login */}
           <button
             type="submit"
-            className="w-full bg-[#E57036] hover:bg-[#d4612f] text-white font-semibold py-3 rounded-lg transition"
+            disabled={loading}
+            className="w-full bg-[#E57036] hover:bg-[#d4612f] text-white font-semibold py-3 rounded-lg transition disabled:opacity-60 flex items-center justify-center gap-2"
           >
-            Sign In
+            {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
 

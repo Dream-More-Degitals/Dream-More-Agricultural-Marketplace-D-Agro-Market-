@@ -13,6 +13,7 @@ import {
   Edit3,
   ShieldCheck,
 } from "lucide-react";
+import { authAPI } from "../../services/api";
 
 export default function ProfilePage() {
   const [user, setUser] = useState(null);
@@ -77,7 +78,15 @@ export default function ProfilePage() {
     setSaved(false);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    try {
+      if (localStorage.getItem("token")) {
+        await authAPI.updateProfile(form);
+      }
+    } catch (err) {
+      console.warn("Backend profile update error:", err.message);
+    }
+
     const existingUser = JSON.parse(
       localStorage.getItem("user") || "{}"
     );

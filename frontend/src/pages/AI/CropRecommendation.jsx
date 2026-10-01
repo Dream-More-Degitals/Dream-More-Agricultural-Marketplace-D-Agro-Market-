@@ -9,6 +9,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { aiAPI } from "../../services/api";
 
 export default function CropRecommendation() {
   const [form, setForm] = useState({
@@ -20,6 +21,7 @@ export default function CropRecommendation() {
   });
 
   const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setForm({
@@ -28,13 +30,38 @@ export default function CropRecommendation() {
     });
   };
 
-  const recommendCrop = () => {
+  const recommendCrop = async () => {
+    setLoading(true);
+    try {
+      const res = await aiAPI.cropRecommendation({
+        soil: form.soil,
+        rainfall: Number(form.rainfall || 0),
+        temperature: Number(form.temperature || 0),
+        region: form.region,
+        season: form.season,
+      });
+
+      if (res && res.recommendation) {
+        setResult({
+          crop: res.recommendation.crop,
+          reason: res.recommendation.reason,
+          confidence: res.recommendation.confidence,
+          alternatives: res.recommendation.alternatives,
+        });
+        return;
+      }
+    } catch (err) {
+      console.warn("Backend AI request failed, falling back to local engine:", err.message);
+    } finally {
+      setLoading(false);
+    }
+
+    // Fallback logic
     const rainfall = Number(form.rainfall || 0);
     const temperature = Number(form.temperature || 0);
 
     let crop = "Maize";
-    let reason =
-      "Maize can perform well under the selected general conditions.";
+    let reason = "Maize can perform well under the selected general conditions.";
 
     if (
       form.soil === "Loamy" &&
@@ -44,28 +71,24 @@ export default function CropRecommendation() {
       temperature <= 30
     ) {
       crop = "Maize";
-      reason =
-        "The soil, rainfall and temperature conditions are suitable for maize.";
+      reason = "The soil, rainfall and temperature conditions are suitable for maize.";
     } else if (
       rainfall >= 500 &&
       temperature >= 15 &&
       temperature <= 25
     ) {
       crop = "Wheat";
-      reason =
-        "The moderate temperature and rainfall conditions are suitable for wheat.";
+      reason = "The moderate temperature and rainfall conditions are suitable for wheat.";
     } else if (
       rainfall >= 800 &&
       temperature >= 18 &&
       temperature <= 28
     ) {
       crop = "Teff";
-      reason =
-        "The selected conditions can support teff production.";
+      reason = "The selected conditions can support teff production.";
     } else if (temperature >= 20 && rainfall < 600) {
       crop = "Sorghum";
-      reason =
-        "Sorghum is generally more tolerant of lower rainfall conditions.";
+      reason = "Sorghum is generally more tolerant of lower rainfall conditions.";
     }
 
     setResult({

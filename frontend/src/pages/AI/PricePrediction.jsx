@@ -8,6 +8,7 @@ import {
   CalendarDays,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { aiAPI } from "../../services/api";
 
 export default function PricePrediction() {
   const [form, setForm] = useState({
@@ -18,6 +19,7 @@ export default function PricePrediction() {
   });
 
   const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setForm({
@@ -26,12 +28,34 @@ export default function PricePrediction() {
     });
   };
 
-  const predictPrice = () => {
+  const predictPrice = async () => {
     const currentPrice = Number(form.currentPrice || 0);
 
     if (!currentPrice || currentPrice <= 0) {
       alert("Please enter the current market price.");
       return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await aiAPI.pricePrediction({
+        product: form.product,
+        region: form.region,
+        currentPrice: currentPrice,
+        quantity: Number(form.quantity || 1),
+      });
+
+      if (res && res.prediction) {
+        setResult({
+          predictedPrice: Math.round(res.prediction.predictedPrice),
+          change: res.prediction.changePercent !== undefined ? res.prediction.changePercent : 8,
+        });
+        return;
+      }
+    } catch (err) {
+      console.warn("Backend price prediction error, using fallback:", err.message);
+    } finally {
+      setLoading(false);
     }
 
     let change = 8;

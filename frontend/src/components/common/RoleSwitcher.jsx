@@ -23,6 +23,16 @@ const ROLE_INFO = {
     icon: "🚚",
     path: "/transport/dashboard",
   },
+  transport: {
+    name: "Transporter",
+    icon: "🚚",
+    path: "/transport/dashboard",
+  },
+  admin: {
+    name: "Admin",
+    icon: "🛡️",
+    path: "/admin/dashboard",
+  },
 };
 
 function RoleSwitcher({ currentRole }) {

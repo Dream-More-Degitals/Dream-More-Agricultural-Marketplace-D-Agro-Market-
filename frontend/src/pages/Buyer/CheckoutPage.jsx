@@ -8,6 +8,7 @@ import {
   ShoppingBag,
   CheckCircle,
 } from "lucide-react";
+import { orderAPI, cartAPI } from "../../services/api";
 
 function CheckoutPage() {
   const navigate = useNavigate();
@@ -67,7 +68,7 @@ function CheckoutPage() {
   const total = subtotal + deliveryFee;
 
   // Place order
-  const handlePlaceOrder = (e) => {
+  const handlePlaceOrder = async (e) => {
     e.preventDefault();
 
     if (cart.length === 0) {
@@ -76,7 +77,56 @@ function CheckoutPage() {
       return;
     }
 
-    const newOrder = {
+    let authoritativeOrder = null;
+
+    // Try authoritative checkout with backend if authenticated and items have valid Mongo IDs
+    const token = localStorage.getItem("token");
+    if (token) {
+      const orderItems = cart
+        .map((i) => ({
+          productId: i._id || (i.id && i.id.length === 24 ? i.id : null),
+          quantity: i.quantity || 1,
+        }))
+        .filter((i) => i.productId);
+
+      if (orderItems.length > 0) {
+        try {
+          const res = await orderAPI.createOrder({
+            customer: {
+              fullName: form.fullName,
+              phone: form.phone,
+              region: form.region,
+              city: form.city,
+              address: form.address,
+            },
+            deliveryMethod: form.deliveryMethod,
+            paymentMethod: form.paymentMethod,
+            items: orderItems,
+          });
+
+          if (res && res.order) {
+            authoritativeOrder = {
+              id: res.order.orderNumber || res.order._id,
+              _id: res.order._id,
+              items: res.order.items || cart,
+              customer: res.order.customer || form,
+              deliveryMethod: res.order.deliveryMethod,
+              deliveryFee: res.order.deliveryFee,
+              paymentMethod: res.order.paymentMethod,
+              subtotal: res.order.subtotal,
+              total: res.order.total,
+              status: res.order.status,
+              date: new Date(res.order.createdAt).toLocaleDateString(),
+              createdAt: res.order.createdAt,
+            };
+          }
+        } catch (err) {
+          console.warn("Backend order creation warning (falling back to local cache):", err.message);
+        }
+      }
+    }
+
+    const newOrder = authoritativeOrder || {
       id: `ORD-${Date.now()}`,
 
       // Products purchased

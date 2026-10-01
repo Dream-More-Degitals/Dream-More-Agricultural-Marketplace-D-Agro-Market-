@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Search,
   Eye,
@@ -9,6 +9,7 @@ import {
   Clock,
   XCircle,
 } from "lucide-react";
+import { adminAPI, orderAPI } from "../../services/api";
 
 const demoOrders = [
   {
@@ -88,6 +89,39 @@ function Orders() {
   const [statusFilter, setStatusFilter] = useState("All");
   const [selectedOrder, setSelectedOrder] = useState(null);
 
+  useEffect(() => {
+    const fetchAdminOrders = async () => {
+      try {
+        if (localStorage.getItem("token")) {
+          const res = await adminAPI.getOrders();
+          if (res && res.orders && res.orders.length > 0) {
+            const apiOrders = res.orders.map((o) => ({
+              id: o.orderNumber || o._id,
+              _id: o._id,
+              customer: o.customer?.fullName || "Buyer",
+              phone: o.customer?.phone || "N/A",
+              product: o.items?.[0]?.name
+                ? `${o.items[0].name}${o.items.length > 1 ? ` (+${o.items.length - 1} more)` : ""}`
+                : "Agricultural Product",
+              quantity: o.items?.reduce((acc, i) => acc + (i.quantity || 1), 0) || 1,
+              total: o.total,
+              payment: o.paymentMethod || "Telebirr",
+              status: o.status,
+              date: new Date(o.createdAt).toLocaleDateString(),
+              address: `${o.customer?.city || ""}, ${o.customer?.region || ""}`,
+            }));
+            setOrders(apiOrders);
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn("Backend admin orders fetch failed, reading demo orders:", err.message);
+      }
+    };
+
+    fetchAdminOrders();
+  }, []);
+
   const filteredOrders = useMemo(() => {
     const query = search.toLowerCase();
 
@@ -107,15 +141,24 @@ function Orders() {
   }, [orders, search, statusFilter]);
 
   const updateStatus = (id, newStatus) => {
+    const order = orders.find((o) => o.id === id || o._id === id);
+    const targetId = order?._id || order?.id || id;
+
+    if (localStorage.getItem("token") && targetId && String(targetId).length === 24) {
+      orderAPI
+        .updateStatus(targetId, newStatus)
+        .catch((err) => console.warn("Backend order status update error:", err.message));
+    }
+
     setOrders((prev) =>
-      prev.map((order) =>
-        order.id === id
-          ? { ...order, status: newStatus }
-          : order
+      prev.map((o) =>
+        (o.id === id || o._id === id)
+          ? { ...o, status: newStatus }
+          : o
       )
     );
 
-    if (selectedOrder?.id === id) {
+    if (selectedOrder?.id === id || selectedOrder?._id === id) {
       setSelectedOrder((prev) => ({
         ...prev,
         status: newStatus,

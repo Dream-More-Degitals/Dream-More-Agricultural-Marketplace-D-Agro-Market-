@@ -10,6 +10,7 @@ import {
   Eye,
   AlertTriangle,
 } from "lucide-react";
+import { adminAPI } from "../../services/api";
 
 const defaultProducts = [
   {
@@ -86,6 +87,35 @@ function ProductsPage() {
     status: "Active",
     image: "",
   });
+
+  useEffect(() => {
+    const fetchAdminProducts = async () => {
+      try {
+        if (localStorage.getItem("token")) {
+          const res = await adminAPI.getProducts();
+          if (res && res.products && res.products.length > 0) {
+            const apiProducts = res.products.map((p) => ({
+              id: p._id,
+              _id: p._id,
+              name: p.name,
+              category: p.category,
+              price: p.price,
+              stock: p.stock,
+              seller: p.sellerName || (typeof p.seller === "object" ? p.seller?.name : "D-Agro Seller") || "Seller",
+              status: p.status || "Active",
+              image: p.image || "/images/product-placeholder.jpg",
+            }));
+            setProducts(apiProducts);
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn("Backend admin products fetch failed, using local cache:", err.message);
+      }
+    };
+
+    fetchAdminProducts();
+  }, []);
 
   useEffect(() => {
     localStorage.setItem(

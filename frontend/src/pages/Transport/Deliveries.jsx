@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Truck,
   Search,
@@ -11,6 +11,7 @@ import {
   Calendar,
   CheckCircle,
 } from "lucide-react";
+import { deliveryAPI } from "../../services/api";
 
 const initialDeliveries = [
   {
@@ -59,17 +60,57 @@ function Deliveries() {
   const [selectedDelivery, setSelectedDelivery] =
     useState(null);
 
+  useEffect(() => {
+    const fetchDeliveries = async () => {
+      try {
+        if (localStorage.getItem("token")) {
+          const res = await deliveryAPI.getAll();
+          if (res && res.deliveries && res.deliveries.length > 0) {
+            const apiDeliveries = res.deliveries.map((d) => ({
+              id: d.deliveryId || d._id,
+              _id: d._id,
+              orderId: d.orderNumber || d.orderId,
+              customer: d.customer,
+              phone: d.phone,
+              pickup: d.pickup,
+              destination: d.destination,
+              product: d.product,
+              quantity: d.quantity,
+              date: d.date || new Date(d.createdAt).toLocaleDateString(),
+              status: d.status,
+            }));
+            setDeliveries(apiDeliveries);
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn("Backend deliveries fetch failed, using local demo data:", err.message);
+      }
+    };
+
+    fetchDeliveries();
+  }, []);
+
   const updateStatus = (id, newStatus) => {
+    const delivery = deliveries.find((d) => d.id === id || d._id === id);
+    const targetId = delivery?._id || delivery?.id || id;
+
+    if (localStorage.getItem("token") && targetId && String(targetId).length === 24) {
+      deliveryAPI
+        .updateStatus(targetId, newStatus)
+        .catch((err) => console.warn("Backend delivery status update error:", err.message));
+    }
+
     setDeliveries((prev) =>
-      prev.map((delivery) =>
-        delivery.id === id
-          ? { ...delivery, status: newStatus }
-          : delivery
+      prev.map((d) =>
+        d.id === id || d._id === id
+          ? { ...d, status: newStatus }
+          : d
       )
     );
 
     setSelectedDelivery((prev) =>
-      prev?.id === id
+      (prev?.id === id || prev?._id === id)
         ? { ...prev, status: newStatus }
         : prev
     );

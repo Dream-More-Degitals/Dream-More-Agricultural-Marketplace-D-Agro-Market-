@@ -1,0 +1,24 @@
+import express from "express";
+import {
+  getCart,
+  addToCart,
+  updateCartItem,
+  removeCartItem,
+  clearCart,
+} from "../controllers/cartController.js";
+import { authenticateUser } from "../middleware/authMiddleware.js";
+
+const router = express.Router();
+
+router.use(authenticateUser);
+
+router.route("/")
+  .get(getCart)
+  .post(addToCart)
+  .delete(clearCart);
+
+router.route("/:productId")
+  .put(updateCartItem)
+  .delete(removeCartItem);
+
+export default router;

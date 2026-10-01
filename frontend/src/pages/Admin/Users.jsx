@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Users,
   Search,
@@ -10,6 +10,7 @@ import {
   UserX,
   ShieldCheck,
 } from "lucide-react";
+import { adminAPI } from "../../services/api";
 
 const initialUsers = [
   {
@@ -66,6 +67,36 @@ function UsersPage() {
   const [statusFilter, setStatusFilter] = useState("All");
   const [selectedUser, setSelectedUser] = useState(null);
 
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        if (localStorage.getItem("token")) {
+          const res = await adminAPI.getUsers();
+          if (res && res.users && res.users.length > 0) {
+            const apiUsers = res.users.map((u) => ({
+              id: u._id,
+              _id: u._id,
+              name: u.name,
+              email: u.email,
+              phone: u.phone || "N/A",
+              role: u.roles?.[0]
+                ? u.roles[0].charAt(0).toUpperCase() + u.roles[0].slice(1)
+                : "Buyer",
+              location: u.location || "Addis Ababa",
+              status: u.status || "Active",
+            }));
+            setUsers(apiUsers);
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn("Backend users fetch failed, reading demo users:", err.message);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
   const filteredUsers = useMemo(() => {
     const searchText = search.toLowerCase();
 
@@ -93,16 +124,25 @@ function UsersPage() {
   }, [users, search, roleFilter, statusFilter]);
 
   const updateStatus = (id, status) => {
+    const user = users.find((u) => u.id === id || u._id === id);
+    const targetId = user?._id || user?.id || id;
+
+    if (localStorage.getItem("token") && targetId && String(targetId).length === 24) {
+      adminAPI
+        .updateUserStatus(targetId, status)
+        .catch((err) => console.warn("Backend user status update error:", err.message));
+    }
+
     setUsers((prev) =>
-      prev.map((user) =>
-        user.id === id
-          ? { ...user, status }
-          : user
+      prev.map((u) =>
+        (u.id === id || u._id === id)
+          ? { ...u, status }
+          : u
       )
     );
 
     setSelectedUser((prev) =>
-      prev?.id === id
+      (prev?.id === id || prev?._id === id)
         ? { ...prev, status }
         : prev
     );

@@ -11,6 +11,7 @@ import {
   Phone,
   Truck,
 } from "lucide-react";
+import { orderAPI } from "../../services/api";
 
 export default function FarmerOrders() {
   const [orders, setOrders] = useState([]);
@@ -37,7 +38,34 @@ export default function FarmerOrders() {
   // ==========================================
   // LOAD ORDERS
   // ==========================================
-  const loadOrders = () => {
+  const loadOrders = async () => {
+    try {
+      if (localStorage.getItem("token")) {
+        const res = await orderAPI.getFarmerOrders();
+        if (res && res.orders && res.orders.length > 0) {
+          const apiOrders = res.orders.map((o) => ({
+            id: o.orderNumber || o._id,
+            _id: o._id,
+            items: o.items || [],
+            farmerItems: o.items || [],
+            customer: o.customer || {},
+            deliveryMethod: o.deliveryMethod,
+            deliveryFee: o.deliveryFee,
+            paymentMethod: o.paymentMethod,
+            subtotal: o.subtotal,
+            total: o.total,
+            status: o.status,
+            date: new Date(o.createdAt).toLocaleDateString(),
+            createdAt: o.createdAt,
+          }));
+          setOrders(apiOrders);
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn("Backend farmer orders fetch failed, reading from local cache:", err.message);
+    }
+
     try {
       const savedOrders = JSON.parse(
         localStorage.getItem("orders") || "[]"

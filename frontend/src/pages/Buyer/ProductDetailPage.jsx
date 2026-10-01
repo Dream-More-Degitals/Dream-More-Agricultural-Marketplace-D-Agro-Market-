@@ -9,6 +9,7 @@ import {
   Plus,
   CheckCircle,
 } from "lucide-react";
+import { productAPI, cartAPI } from "../../services/api";
 
 const defaultProducts = [
   {
@@ -81,51 +82,75 @@ export default function ProductDetailPage() {
   const [added, setAdded] = useState(false);
 
   useEffect(() => {
-    // If Marketplace already sent the product,
-    // use it directly.
+    // If Marketplace already sent the product, use it directly
     if (location.state?.product) {
       setProduct(location.state.product);
       return;
     }
 
-    try {
-      const farmerProducts = JSON.parse(
-        localStorage.getItem("farmerProducts") || "[]"
-      );
+    const fetchProduct = async () => {
+      try {
+        const res = await productAPI.getById(id);
+        if (res && res.product) {
+          const p = res.product;
+          setProduct({
+            id: p._id,
+            _id: p._id,
+            slug: p.slug || p._id,
+            name: p.name,
+            category: p.category,
+            location: p.location || "Ethiopia",
+            description: p.description,
+            price: p.price,
+            unit: p.unit || "kg",
+            stock: p.stock,
+            seller: p.sellerName || (typeof p.seller === "object" ? p.seller?.name : "D-Agro Seller") || "Seller",
+            image: p.image || "/images/product-placeholder.jpg",
+          });
+          return;
+        }
+      } catch (err) {
+        console.warn("Backend product detail fetch error, checking local data:", err.message);
+      }
 
-      const supplierProducts = JSON.parse(
-        localStorage.getItem("supplierProducts") || "[]"
-      );
+      try {
+        const farmerProducts = JSON.parse(
+          localStorage.getItem("farmerProducts") || "[]"
+        );
 
-      const allProducts = [
-        ...defaultProducts,
-        ...farmerProducts.map((item) => ({
-          ...item,
-          slug: `farmer-${item.id}`,
-          seller: item.seller || "Farmer",
-        })),
-        ...supplierProducts.map((item) => ({
-          ...item,
-          slug: `supplier-${item.id}`,
-          seller: item.seller || "Supplier",
-        })),
-      ];
+        const supplierProducts = JSON.parse(
+          localStorage.getItem("supplierProducts") || "[]"
+        );
 
-      const foundProduct = allProducts.find(
-        (item) =>
-          String(item.id) === String(id) ||
-          String(item.slug) === String(id)
-      );
+        const allProducts = [
+          ...defaultProducts,
+          ...farmerProducts.map((item) => ({
+            ...item,
+            slug: `farmer-${item.id}`,
+            seller: item.seller || "Farmer",
+          })),
+          ...supplierProducts.map((item) => ({
+            ...item,
+            slug: `supplier-${item.id}`,
+            seller: item.seller || "Supplier",
+          })),
+        ];
 
-      setProduct(foundProduct || null);
-    } catch (error) {
-      console.error(
-        "Failed to load product:",
-        error
-      );
+        const foundProduct = allProducts.find(
+          (item) =>
+            String(item.id) === String(id) ||
+            String(item.slug) === String(id) ||
+            String(item._id) === String(id)
+        );
 
-      setProduct(null);
-    }
+        setProduct(foundProduct || null);
+      } catch (error) {
+        console.error("Failed to load product:", error);
+        setProduct(null);
+      }
+    };
+
+    fetchProduct();
   }, [id, location.state]);
 
   const increaseQuantity = () => {
@@ -148,17 +173,23 @@ export default function ProductDetailPage() {
     if (!product) return;
 
     try {
+      if (localStorage.getItem("token") && (product._id || product.id)) {
+        cartAPI.addToCart(product._id || product.id, quantity).catch((e) =>
+          console.warn("Cart API background sync:", e.message)
+        );
+      }
+
       const existingCart = JSON.parse(
         localStorage.getItem("cart") || "[]"
       );
 
       const productId =
-        product.id || product.slug;
+        product.id || product.slug || product._id;
 
       const existingItemIndex =
         existingCart.findIndex(
           (item) =>
-            String(item.id || item.slug) ===
+            String(item.id || item.slug || item._id) ===
             String(productId)
         );
 
@@ -179,6 +210,7 @@ export default function ProductDetailPage() {
         JSON.stringify(existingCart)
       );
 
+      window.dispatchEvent(new Event("cartUpdated"));
       setAdded(true);
 
       setTimeout(() => {

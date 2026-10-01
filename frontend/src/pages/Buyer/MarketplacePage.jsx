@@ -6,6 +6,7 @@ import {
   Star,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { productAPI, cartAPI } from "../../services/api";
 
 const products = [
   {
@@ -81,84 +82,113 @@ function MarketplacePage() {
     useState("All Products");
 
   useEffect(() => {
-    try {
-      const savedSupplierProducts = JSON.parse(
-        localStorage.getItem("supplierProducts") || "[]"
-      );
+    const fetchProducts = async () => {
+      try {
+        const res = await productAPI.getAll();
+        if (res && res.products && res.products.length > 0) {
+          const apiProducts = res.products.map((p) => ({
+            id: p._id,
+            _id: p._id,
+            slug: p.slug || p._id,
+            name: p.name,
+            category: p.category,
+            location: p.location || "Ethiopia",
+            description: p.description,
+            price: p.price,
+            unit: p.unit || "kg",
+            badge:
+              p.badge ||
+              (p.stock <= 10 && p.stock > 0
+                ? "LOW STOCK"
+                : p.stock === 0
+                ? "OUT OF STOCK"
+                : "AVAILABLE"),
+            image: p.image || "/images/product-placeholder.jpg",
+            stock: p.stock,
+            seller:
+              p.sellerName ||
+              (typeof p.seller === "object" ? p.seller?.name : "D-Agro Seller") ||
+              "Seller",
+          }));
+          setMarketplaceProducts(apiProducts);
+          return;
+        }
+      } catch (err) {
+        console.warn("Backend products fetch failed, using local data:", err.message);
+      }
 
-      if (
-        Array.isArray(savedSupplierProducts) &&
-        savedSupplierProducts.length > 0
-      ) {
-        const convertedProducts =
-          savedSupplierProducts.map((product) => ({
+      // Fallback to local storage / static products
+      try {
+        const savedSupplierProducts = JSON.parse(
+          localStorage.getItem("supplierProducts") || "[]"
+        );
+
+        if (
+          Array.isArray(savedSupplierProducts) &&
+          savedSupplierProducts.length > 0
+        ) {
+          const convertedProducts = savedSupplierProducts.map((product) => ({
             slug: `supplier-${product.id}`,
-
             name: product.name,
-
             category: product.category,
-
             location: product.location || "Ethiopia",
-
             description:
               product.description ||
               "Quality agricultural product available from a D-Agro supplier.",
-
             price:
               Number(
                 String(product.price || "")
                   .replace(/,/g, "")
                   .replace(" ETB", "")
               ) || 0,
-
             unit: product.unit || "piece",
-
             badge:
               product.status === "Low Stock"
                 ? "LOW STOCK"
                 : "AVAILABLE",
-
             image:
               product.image ||
               "/images/product-placeholder.jpg",
-
             stock: Number(product.stock) || 0,
-
             seller: "D-Agro Supplier",
           }));
 
-        setMarketplaceProducts([
-          ...convertedProducts,
-          ...products,
-        ]);
-      } else {
+          setMarketplaceProducts([
+            ...convertedProducts,
+            ...products,
+          ]);
+        } else {
+          setMarketplaceProducts(products);
+        }
+      } catch (error) {
         setMarketplaceProducts(products);
       }
-    } catch (error) {
-      console.error(
-        "Error loading supplier products:",
-        error
-      );
+    };
 
-      setMarketplaceProducts(products);
-    }
+    fetchProducts();
   }, []);
 
   const addToCart = (product) => {
     try {
+      if (localStorage.getItem("token") && (product._id || product.id)) {
+        cartAPI.addToCart(product._id || product.id, 1).catch((e) =>
+          console.warn("Cart API background sync:", e.message)
+        );
+      }
+
       const existingCart = JSON.parse(
         localStorage.getItem("cart") || "[]"
       );
 
       const existingItem = existingCart.find(
-        (item) => item.slug === product.slug
+        (item) => item.slug === product.slug || (item._id && item._id === product._id)
       );
 
       let updatedCart;
 
       if (existingItem) {
         updatedCart = existingCart.map((item) =>
-          item.slug === product.slug
+          (item.slug === product.slug || (item._id && item._id === product._id))
             ? {
                 ...item,
                 quantity: item.quantity + 1,
@@ -180,6 +210,7 @@ function MarketplacePage() {
         JSON.stringify(updatedCart)
       );
 
+      window.dispatchEvent(new Event("cartUpdated"));
       alert(`${product.name} added to cart.`);
     } catch (error) {
       console.error("Error adding product to cart:", error);

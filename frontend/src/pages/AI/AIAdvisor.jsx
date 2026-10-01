@@ -8,6 +8,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { aiAPI } from "../../services/api";
 
 const initialMessages = [
   {
@@ -95,7 +96,7 @@ export default function AIAdvisor() {
   const [loading, setLoading] =
     useState(false);
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     const message = input.trim();
 
     if (!message || loading) {
@@ -116,22 +117,38 @@ export default function AIAdvisor() {
     setInput("");
     setLoading(true);
 
-    setTimeout(() => {
-      const response = getAIResponse(message);
+    try {
+      const res = await aiAPI.advisor({ message });
+      if (res && res.reply) {
+        const botMessage = {
+          id: Date.now() + 1,
+          sender: "bot",
+          text: res.reply,
+        };
 
-      const botMessage = {
-        id: Date.now() + 1,
-        sender: "bot",
-        text: response,
-      };
-
-      setMessages((previous) => [
-        ...previous,
-        botMessage,
-      ]);
-
+        setMessages((previous) => [
+          ...previous,
+          botMessage,
+        ]);
+        return;
+      }
+    } catch (err) {
+      console.warn("Backend AI advisor error, using fallback:", err.message);
+    } finally {
       setLoading(false);
-    }, 700);
+    }
+
+    const response = getAIResponse(message);
+    const botMessage = {
+      id: Date.now() + 1,
+      sender: "bot",
+      text: response,
+    };
+
+    setMessages((previous) => [
+      ...previous,
+      botMessage,
+    ]);
   };
 
   const handleKeyDown = (e) => {

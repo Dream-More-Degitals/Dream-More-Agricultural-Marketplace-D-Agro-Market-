@@ -9,6 +9,7 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { aiAPI } from "../../services/api";
 
 export default function DiseaseDetection() {
   const [image, setImage] = useState(null);
@@ -43,25 +44,41 @@ export default function DiseaseDetection() {
     reader.readAsDataURL(file);
   };
 
-  const analyzeImage = () => {
-    if (!image) {
+  const analyzeImage = async () => {
+    if (!image && !preview) {
       alert("Please upload a crop image first.");
       return;
     }
 
     setLoading(true);
 
-    // Demonstration AI analysis
-    setTimeout(() => {
-      setResult({
-        disease: "Healthy / Possible Leaf Stress",
-        confidence: 87,
-        advice:
-          "The image does not show strong signs of a severe disease. Monitor the crop regularly and check for changes in leaf color, spots or wilting.",
+    try {
+      const res = await aiAPI.diseaseDetection({
+        cropType: "General Crop",
+        image: preview,
       });
 
+      if (res && res.result) {
+        setResult({
+          disease: res.result.disease,
+          confidence: res.result.confidence,
+          advice: res.result.advice || res.result.symptoms,
+        });
+        return;
+      }
+    } catch (err) {
+      console.warn("Backend disease detection error, using fallback:", err.message);
+    } finally {
       setLoading(false);
-    }, 1500);
+    }
+
+    // Fallback
+    setResult({
+      disease: "Healthy / Possible Leaf Stress",
+      confidence: 87,
+      advice:
+        "The image does not show strong signs of a severe disease. Monitor the crop regularly and check for changes in leaf color, spots or wilting.",
+    });
   };
 
   const removeImage = () => {

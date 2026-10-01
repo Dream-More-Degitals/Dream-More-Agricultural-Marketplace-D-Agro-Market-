@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { UserPlus, Check } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
 function Register() {
   const navigate = useNavigate();
+  const { register } = useAuth();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -11,6 +13,8 @@ function Register() {
     password: "",
     roles: [],
   });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const roles = [
     {
@@ -52,61 +56,47 @@ function Register() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
     if (formData.roles.length === 0) {
-      alert("Please choose at least one role.");
+      setError("Please choose at least one role.");
       return;
     }
 
-    /*
-      Save registration information.
+    if (formData.password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
 
-      This information will later be used
-      by the common ProfilePage.
-    */
-
-    const userData = {
-      name: formData.name.trim(),
-      email: formData.email.trim(),
-      password: formData.password,
-      roles: formData.roles,
-
-      createdAt: new Date().toISOString(),
-
-      profile: {
+    setLoading(true);
+    try {
+      await register({
         name: formData.name.trim(),
         email: formData.email.trim(),
-        phone: "",
-        location: "",
-        bio: "",
-        farmName: "",
-        farmType: "",
-        businessName: "",
-        vehicleType: "",
-      },
-    };
+        password: formData.password,
+        roles: formData.roles,
+      });
 
-    localStorage.setItem(
-      "user",
-      JSON.stringify(userData)
-    );
-
-    /*
-      Also save a separate profile object.
-      This makes it easy for ProfilePage to use
-      the registration information.
-    */
-
-    localStorage.setItem(
-      "profile",
-      JSON.stringify(userData.profile)
-    );
-
-    alert("Account created successfully!");
-
-    navigate("/login");
+      alert("Account created successfully!");
+      if (formData.roles.length === 1) {
+        const dashboardPaths = {
+          farmer: "/farmer/dashboard",
+          buyer: "/buyer/dashboard",
+          supplier: "/supplier/dashboard",
+          transporter: "/transport/dashboard",
+          transport: "/transport/dashboard",
+        };
+        navigate(dashboardPaths[formData.roles[0]] || "/buyer/dashboard");
+      } else {
+        navigate("/select-role");
+      }
+    } catch (err) {
+      setError(err.message || "Failed to create account. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -131,6 +121,11 @@ function Register() {
 
         </div>
 
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
 
@@ -255,9 +250,10 @@ function Register() {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full bg-[#E57036] hover:bg-[#d4612f] text-white font-semibold py-3 rounded-lg transition"
+            disabled={loading}
+            className="w-full bg-[#E57036] hover:bg-[#d4612f] text-white font-semibold py-3 rounded-lg transition disabled:opacity-60"
           >
-            Create Account
+            {loading ? "Creating Account..." : "Create Account"}
           </button>
 
         </form>

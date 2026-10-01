@@ -8,6 +8,7 @@ import {
   X,
 } from "lucide-react";
 import { compressImage } from "../../utils/imageUtils";
+import { productAPI } from "../../services/api";
 
 const defaultProducts = [
   {
@@ -54,17 +55,47 @@ export default function SupplierProducts() {
   const [imageError, setImageError] = useState("");
 
   useEffect(() => {
-    const savedProducts = localStorage.getItem("supplierProducts");
+    const fetchSupplierProducts = async () => {
+      try {
+        if (localStorage.getItem("token")) {
+          const res = await productAPI.getMyProducts();
+          if (res && res.products && res.products.length > 0) {
+            const apiProducts = res.products.map((p) => ({
+              id: p._id,
+              _id: p._id,
+              name: p.name,
+              category: p.category,
+              price: p.price,
+              stock: p.stock,
+              location: p.location,
+              unit: p.unit,
+              description: p.description,
+              image: p.image || "/images/product-placeholder.jpg",
+              seller: "Supplier",
+            }));
+            setProducts(apiProducts);
+            localStorage.setItem("supplierProducts", JSON.stringify(apiProducts));
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn("Backend supplier products fetch failed, using local cache:", err.message);
+      }
 
-    if (savedProducts) {
-      setProducts(JSON.parse(savedProducts));
-    } else {
-      localStorage.setItem(
-        "supplierProducts",
-        JSON.stringify(defaultProducts)
-      );
-      setProducts(defaultProducts);
-    }
+      const savedProducts = localStorage.getItem("supplierProducts");
+
+      if (savedProducts) {
+        setProducts(JSON.parse(savedProducts));
+      } else {
+        localStorage.setItem(
+          "supplierProducts",
+          JSON.stringify(defaultProducts)
+        );
+        setProducts(defaultProducts);
+      }
+    };
+
+    fetchSupplierProducts();
   }, []);
 
   const saveProducts = (updatedProducts) => {
@@ -166,8 +197,35 @@ export default function SupplierProducts() {
     }
 
     if (editingProduct) {
+      const prodId = editingProduct._id || editingProduct.id;
+      if (localStorage.getItem("token") && prodId && String(prodId).length === 24) {
+        productAPI
+          .update(prodId, {
+            name: formData.name.trim(),
+            category: formData.category,
+            price: Number(formData.price),
+            stock: Number(formData.stock),
+            location: formData.location.trim(),
+            unit: formData.unit,
+            description: formData.description.trim(),
+            image: formData.image || "/images/product-placeholder.jpg",
+          })
+          .then((res) => {
+            if (res && res.product) {
+              setProducts((prev) =>
+                prev.map((p) =>
+                  (p._id || p.id) === prodId
+                    ? { ...p, ...res.product, id: res.product._id, seller: "Supplier" }
+                    : p
+                )
+              );
+            }
+          })
+          .catch((err) => console.warn("Backend update error:", err.message));
+      }
+
       const updatedProducts = products.map((product) =>
-        product.id === editingProduct.id
+        (product._id || product.id) === prodId
           ? {
               ...product,
               name: formData.name.trim(),
@@ -186,6 +244,29 @@ export default function SupplierProducts() {
 
       saveProducts(updatedProducts);
     } else {
+      if (localStorage.getItem("token")) {
+        productAPI
+          .create({
+            name: formData.name.trim(),
+            category: formData.category,
+            price: Number(formData.price),
+            stock: Number(formData.stock),
+            location: formData.location.trim(),
+            unit: formData.unit,
+            description: formData.description.trim(),
+            image: formData.image || "/images/product-placeholder.jpg",
+          })
+          .then((res) => {
+            if (res && res.product) {
+              setProducts((prev) => [
+                { ...res.product, id: res.product._id, seller: "Supplier" },
+                ...prev.filter((p) => p.id !== res.product._id),
+              ]);
+            }
+          })
+          .catch((err) => console.warn("Backend create error:", err.message));
+      }
+
       const newProduct = {
         id: `supplier-${Date.now()}`,
         name: formData.name.trim(),
@@ -214,8 +295,18 @@ export default function SupplierProducts() {
 
     if (!confirmed) return;
 
+    const product = products.find(
+      (item) => (item._id || item.id) === id
+    );
+    const prodId = product?._id || product?.id || id;
+    if (localStorage.getItem("token") && prodId && String(prodId).length === 24) {
+      productAPI
+        .delete(prodId)
+        .catch((err) => console.warn("Backend product delete error:", err.message));
+    }
+
     const updatedProducts = products.filter(
-      (product) => product.id !== id
+      (product) => (product._id || product.id) !== id
     );
 
     saveProducts(updatedProducts);

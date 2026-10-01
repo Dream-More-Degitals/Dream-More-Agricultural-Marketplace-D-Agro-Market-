@@ -10,6 +10,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { compressImage } from "../../utils/imageUtils";
+import { productAPI } from "../../services/api";
 
 const defaultProducts = [
   {
@@ -48,26 +49,47 @@ export default function FarmerProducts() {
 
   // Load products
   useEffect(() => {
-    try {
-      const savedProducts = localStorage.getItem(
-        "farmerProducts"
-      );
+    const fetchFarmerProducts = async () => {
+      try {
+        if (localStorage.getItem("token")) {
+          const res = await productAPI.getMyProducts();
+          if (res && res.products && res.products.length > 0) {
+            const apiProducts = res.products.map((p) => ({
+              id: p._id,
+              _id: p._id,
+              name: p.name,
+              category: p.category,
+              price: p.price,
+              stock: p.stock,
+              location: p.location,
+              unit: p.unit,
+              description: p.description,
+              image: p.image || "/images/product-placeholder.jpg",
+              seller: "Farmer",
+            }));
+            setProducts(apiProducts);
+            localStorage.setItem("farmerProducts", JSON.stringify(apiProducts));
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn("Backend farmer products fetch failed, using local cache:", err.message);
+      }
 
-      if (savedProducts) {
-        setProducts(JSON.parse(savedProducts));
-      } else {
-        localStorage.setItem(
-          "farmerProducts",
-          JSON.stringify(defaultProducts)
-        );
-
+      try {
+        const savedProducts = localStorage.getItem("farmerProducts");
+        if (savedProducts) {
+          setProducts(JSON.parse(savedProducts));
+        } else {
+          localStorage.setItem("farmerProducts", JSON.stringify(defaultProducts));
+          setProducts(defaultProducts);
+        }
+      } catch (error) {
         setProducts(defaultProducts);
       }
-    } catch (error) {
-      console.error("Failed to load farmer products:", error);
+    };
 
-      setProducts(defaultProducts);
-    }
+    fetchFarmerProducts();
   }, []);
 
   // Save products
@@ -209,9 +231,38 @@ export default function FarmerProducts() {
       formData.image ||
       "/images/product-placeholder.jpg";
 
+    let backendProduct = null;
+
     if (editingProduct) {
+      const prodId = editingProduct._id || editingProduct.id;
+      if (localStorage.getItem("token") && prodId && String(prodId).length === 24) {
+        productAPI
+          .update(prodId, {
+            name,
+            category: formData.category,
+            price,
+            stock,
+            location,
+            unit: formData.unit,
+            description,
+            image: productImage,
+          })
+          .then((res) => {
+            if (res && res.product) {
+              setProducts((prev) =>
+                prev.map((p) =>
+                  (p._id || p.id) === prodId
+                    ? { ...p, ...res.product, id: res.product._id, seller: "Farmer" }
+                    : p
+                )
+              );
+            }
+          })
+          .catch((err) => console.warn("Backend update error:", err.message));
+      }
+
       const updatedProducts = products.map((product) => {
-        if (product.id !== editingProduct.id) {
+        if ((product._id || product.id) !== prodId) {
           return product;
         }
 
@@ -231,6 +282,29 @@ export default function FarmerProducts() {
 
       saveProducts(updatedProducts);
     } else {
+      if (localStorage.getItem("token")) {
+        productAPI
+          .create({
+            name,
+            category: formData.category,
+            price,
+            stock,
+            location,
+            unit: formData.unit,
+            description,
+            image: productImage,
+          })
+          .then((res) => {
+            if (res && res.product) {
+              setProducts((prev) => [
+                { ...res.product, id: res.product._id, seller: "Farmer" },
+                ...prev.filter((p) => p.id !== res.product._id),
+              ]);
+            }
+          })
+          .catch((err) => console.warn("Backend create error:", err.message));
+      }
+
       const newProduct = {
         id: `farmer-${Date.now()}`,
         name,
@@ -257,7 +331,7 @@ export default function FarmerProducts() {
   // Delete
   const deleteProduct = (id) => {
     const product = products.find(
-      (item) => item.id === id
+      (item) => (item._id || item.id) === id
     );
 
     const confirmed = window.confirm(
@@ -268,8 +342,15 @@ export default function FarmerProducts() {
       return;
     }
 
+    const prodId = product?._id || product?.id || id;
+    if (localStorage.getItem("token") && prodId && String(prodId).length === 24) {
+      productAPI
+        .delete(prodId)
+        .catch((err) => console.warn("Backend product delete error:", err.message));
+    }
+
     const updatedProducts = products.filter(
-      (item) => item.id !== id
+      (item) => (item._id || item.id) !== id
     );
 
     saveProducts(updatedProducts);
