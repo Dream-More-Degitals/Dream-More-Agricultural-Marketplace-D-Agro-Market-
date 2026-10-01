@@ -1,16 +1,99 @@
-# React + Vite
+# D-Agro Market AI — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the frontend for **Dream More Agricultural Marketplace with AI (D-Agro Market AI)**, a platform connecting Ethiopian farmers, buyers, suppliers, and transport providers — enhanced with AI-powered agricultural tools.
 
-Currently, two official plugins are available:
+Built with **React + Vite** and styled using **Tailwind CSS**.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Tech Stack
 
-## React Compiler
+| Tool | Purpose |
+|---|---|
+| React.js | UI library |
+| Vite | Build tool & dev server |
+| Tailwind CSS | Styling |
+| React Router | Client-side routing |
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Install dependencies:
+
+```bash
+npm install
+```
+
+Run the development server:
+
+```bash
+npm run dev
+```
+
+The app will be available at `http://localhost:5173`.
+
+Build for production:
+
+```bash
+npm run build
+```
+
+Preview the production build locally:
+
+```bash
+npm run preview
+```
+
+## Project Structure
+
+```
+frontend/
+├── public/                # Static assets
+├── src/
+│   ├── assets/             # Images and media
+│   ├── components/         # Reusable UI components (incl. AI chatbot, prediction cards)
+│   ├── context/             # React context providers
+│   ├── pages/
+│   │   ├── Landing/          # Home page
+│   │   ├── About/
+│   │   ├── Contact/
+│   │   ├── Auth/             # Login & registration
+│   │   ├── AI/               # AI Advisor tools (chatbot, crop recommendation)
+│   │   ├── Farmer/           # Farmer portal pages
+│   │   ├── Buyer/            # Buyer dashboard, marketplace, cart, orders
+│   │   ├── Supplier/         # Supplier portal pages
+│   │   ├── Transport/        # Transport provider pages
+│   │   └── Admin/            # Admin dashboard, order tracking, profile, notifications
+│   ├── routes/               # App route definitions
+│   ├── services/             # API calls to the backend
+│   ├── styles/               # Global styles
+│   ├── utils/                 # Helper functions
+│   ├── App.jsx
+│   └── main.jsx
+├── index.html
+├── vite.config.js
+└── package.json
+```
+
+## Key Pages & Features
+
+- **Landing / Home** — product introduction and entry points for farmers and buyers
+- **AI Advisor** — chat-based agricultural assistant for crops, diseases, soil, and markets
+- **Buyer Portal** — marketplace browsing, cart, checkout, and order tracking
+- **Farmer Portal** — product listing and sales management
+- **Supplier & Transport Portals** — inventory and logistics coordination
+- **Admin Dashboard** — user, order, and platform management (in progress)
+- **Auth** — registration with role selection (Farmer / Buyer / Supplier / Transport)
+
+## Environment Variables
+
+If the app needs to call the backend API, create a `.env` file in this folder:
+
+```
+VITE_API_URL=http://localhost:PORT
+```
+
+## Deployment
+
+This app is a static Vite build and can be deployed to any static hosting provider (e.g. Vercel, Netlify) with:
+
+- **Build command:** `npm run build`
+- **Output directory:** `dist`
